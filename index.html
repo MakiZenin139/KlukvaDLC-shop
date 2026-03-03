@@ -697,14 +697,14 @@ async function pay() {
 
     // Сохраняем pay_url для кнопки "открыть снова"
     lastPayUrl = data.pay_url;
-    g('openPayBtn').onclick = () => tg.openLink(lastPayUrl);
+    g('openPayBtn').onclick = () => window.open(lastPayUrl, '_blank');
 
     // Уменьшаем stock в UI
     const idx = plans.findIndex(x => x.days === selDays);
     if (idx >= 0 && plans[idx].stock > 0) plans[idx].stock--;
 
-    // Открываем платёжную страницу
-    tg.openLink(data.pay_url);
+    // Открываем в системном браузере (tg.openLink блокирует pay.freekassa.com)
+    window.open(data.pay_url, '_blank');
 
     // Переходим на экран успеха
     goScreen('s3');
