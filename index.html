@@ -5,550 +5,634 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>KlukvaDLC Shop</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
-
 :root {
-  --bg: #111113;
-  --surface: #1c1c1f;
-  --surface2: #242428;
-  --border: #2a2a2e;
-  --accent: #e63946;
-  --accent-glow: rgba(230,57,70,0.15);
-  --gold: #f4c430;
-  --green: #34c759;
-  --text: #f2f2f7;
-  --muted: #8e8e93;
-  --r: 16px;
-  --rs: 10px;
+  --bg:     #0e0e10;
+  --surf:   #18181b;
+  --surf2:  #222226;
+  --brd:    #2e2e33;
+  --acc:    #e63946;
+  --acc-lo: rgba(230,57,70,.13);
+  --acc-hi: rgba(230,57,70,.22);
+  --gold:   #f4c430;
+  --green:  #30d158;
+  --txt:    #f2f2f7;
+  --muted:  #8e8e93;
+  --r:      16px;
+  --rs:     10px;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html,body { background:var(--bg); color:var(--text); font-family:'Nunito',sans-serif; min-height:100vh; overflow-x:hidden; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { background:var(--bg); color:var(--txt); font-family:'Nunito', sans-serif; min-height:100vh; overflow-x:hidden; }
 
-.screen { display:none; flex-direction:column; min-height:100vh; }
+/* ──── SCREENS ──── */
+.screen { display:none; flex-direction:column; min-height:100vh; animation:fadeIn .22s ease; }
 .screen.active { display:flex; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
-/* HEADER */
+/* ──── HEADER ──── */
 .hdr {
-  padding:20px 18px 16px;
-  background:linear-gradient(160deg,#1c0808 0%,var(--bg) 55%);
-  border-bottom:1px solid var(--border);
-  position:relative; overflow:hidden;
+  padding:22px 18px 16px;
+  background:linear-gradient(150deg, #1a0505 0%, var(--bg) 60%);
+  border-bottom:1px solid var(--brd);
+  position:relative; overflow:hidden; flex-shrink:0;
 }
-.hdr-glow {
-  position:absolute; top:-60px; right:-40px;
-  width:200px; height:200px;
-  background:radial-gradient(circle,rgba(230,57,70,.12) 0%,transparent 70%);
+.hdr::before {
+  content:''; position:absolute; top:-80px; right:-60px;
+  width:240px; height:240px;
+  background:radial-gradient(circle, rgba(230,57,70,.09) 0%, transparent 70%);
   pointer-events:none;
 }
-.logo { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:3px; line-height:1; }
-.logo em { color:var(--accent); font-style:normal; }
-.logo-sub { font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
-.back-btn {
-  display:none; align-items:center; gap:5px;
-  background:none; border:none; color:var(--accent);
-  font-family:'Nunito',sans-serif; font-size:14px; font-weight:700;
-  cursor:pointer; margin-bottom:10px; padding:0;
-}
+.logo { font-family:'Bebas Neue', sans-serif; font-size:30px; letter-spacing:3px; line-height:1; }
+.logo em { color:var(--acc); font-style:normal; }
+.logo-sub { font-size:10px; color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }
+
 .user-pill {
   display:inline-flex; align-items:center; gap:6px;
-  background:var(--surface2); border:1px solid var(--border);
-  border-radius:20px; padding:4px 12px;
-  font-size:12px; color:var(--muted); margin-top:10px;
+  background:var(--surf2); border:1px solid var(--brd);
+  border-radius:20px; padding:4px 12px 4px 10px;
+  font-size:12px; color:var(--muted); margin-top:10px; transition:all .2s;
 }
-.dot { width:6px; height:6px; background:var(--green); border-radius:50%; flex-shrink:0; }
-.dot.red { background:var(--accent); }
+.dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; transition:background .3s; }
+.dot.green  { background:var(--green); box-shadow:0 0 6px var(--green); }
+.dot.red    { background:var(--acc); box-shadow:0 0 6px var(--acc); }
 .dot.yellow { background:var(--gold); }
+.dot.grey   { background:var(--muted); }
 
-/* API STATUS BAR */
+.back-btn {
+  display:none; align-items:center; gap:4px;
+  background:none; border:none; color:var(--acc);
+  font-family:'Nunito', sans-serif; font-size:14px; font-weight:800;
+  cursor:pointer; margin-bottom:10px; padding:0; letter-spacing:.2px;
+}
+.back-btn svg { width:18px; height:18px; }
+
+/* ──── API STATUS BAR ──── */
 .api-bar {
-  padding:7px 18px;
-  font-size:11px;
-  display:flex; align-items:center; gap:6px;
-  border-bottom: 1px solid var(--border);
+  padding:6px 18px; font-size:11px; font-weight:700;
+  display:flex; align-items:center; gap:7px; flex-shrink:0;
+  border-bottom:1px solid var(--brd); letter-spacing:.2px;
+  transition:background .3s, color .3s;
 }
-.api-bar.ok { color:#34c759; background:rgba(52,199,89,.07); }
-.api-bar.fail { color:var(--accent); background:rgba(230,57,70,.09); }
-.api-bar.loading { color:var(--muted); }
+.api-bar.ok   { color:var(--green); background:rgba(48,209,88,.06); }
+.api-bar.fail { color:var(--acc);   background:rgba(230,57,70,.07); }
+.api-bar.load { color:var(--muted); background:transparent; }
 
-/* CONTENT */
+/* ──── CONTENT ──── */
 .cnt { padding:18px; flex:1; max-width:480px; width:100%; margin:0 auto; }
-.lbl { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:12px; padding-left:2px; }
+.lbl { font-size:10px; text-transform:uppercase; letter-spacing:2.5px; color:var(--muted); margin-bottom:12px; padding-left:2px; font-weight:700; }
 
-/* CATEGORY CARDS */
-.cats { display:flex; flex-direction:column; gap:12px; }
+/* ──── SPINNER ──── */
+.spin-wrap { text-align:center; padding:70px 20px; }
+.spinner { width:38px; height:38px; border:3px solid var(--brd); border-top-color:var(--acc); border-radius:50%; animation:spin .65s linear infinite; margin:0 auto 14px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin-txt { font-size:13px; color:var(--muted); }
+
+/* ──── ERROR BLOCK ──── */
+.err-block {
+  background:var(--acc-lo); border:1.5px solid rgba(230,57,70,.3);
+  border-radius:var(--r); padding:24px 20px; text-align:center; margin-bottom:16px;
+  display:none;
+}
+.err-block.on { display:block; animation:fadeIn .2s ease; }
+.err-block .eb-ico { font-size:40px; margin-bottom:12px; }
+.err-block .eb-ttl { font-size:17px; font-weight:800; margin-bottom:7px; }
+.err-block .eb-msg { font-size:12px; color:var(--muted); line-height:1.7; }
+.err-block .eb-url { font-size:10px; color:var(--acc); margin-top:8px; word-break:break-all; }
+.retry-btn {
+  margin-top:16px; padding:11px 28px; background:var(--acc); color:#fff;
+  border:none; border-radius:10px; font-family:'Nunito', sans-serif;
+  font-size:13px; font-weight:800; cursor:pointer; letter-spacing:.3px;
+  transition:opacity .2s, transform .1s;
+}
+.retry-btn:active { transform:scale(.97); }
+
+/* ──── CATEGORY CARDS ──── */
 .cat {
-  background:var(--surface); border:1.5px solid var(--border);
-  border-radius:var(--r); padding:20px 18px;
-  cursor:pointer; display:flex; align-items:center; gap:16px;
-  transition:border-color .2s,background .2s,transform .1s;
-  position:relative; overflow:hidden;
+  background:var(--surf); border:1.5px solid var(--brd);
+  border-radius:var(--r); padding:18px 16px;
+  cursor:pointer; display:flex; align-items:center; gap:14px;
+  transition:border-color .15s, background .15s, transform .1s;
+  position:relative; overflow:hidden; margin-bottom:10px;
 }
-.cat:active { transform:scale(.98); }
-.cat:hover { border-color:var(--accent); background:var(--accent-glow); }
+.cat::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent 60%, rgba(230,57,70,.03)); pointer-events:none; }
+.cat:active { transform:scale(.985); }
+.cat:hover, .cat:focus { border-color:var(--acc); background:var(--acc-lo); }
 .cat-ico {
-  width:52px; height:52px; border-radius:14px;
-  display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;
+  width:52px; height:52px; border-radius:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
 }
-.cat-info { flex:1; }
-.cat-name { font-size:18px; font-weight:800; }
-.cat-desc { font-size:13px; color:var(--muted); margin-top:2px; }
-.cat-arr { color:var(--muted); font-size:22px; margin-left:auto; line-height:1; }
-.cat-stock { font-size:11px; font-weight:700; color:var(--green); margin-top:4px; }
-.cat-stock.out { color:var(--accent); }
-.cat-stock.loading { color:var(--muted); }
+.cat-info { flex:1; min-width:0; }
+.cat-name { font-size:17px; font-weight:800; }
+.cat-desc { font-size:12px; color:var(--muted); margin-top:2px; }
+.cat-badge {
+  font-size:11px; font-weight:700; margin-top:5px; display:inline-block;
+  padding:2px 8px; border-radius:6px;
+}
+.cat-badge.ok   { color:var(--green); background:rgba(48,209,88,.12); }
+.cat-badge.out  { color:var(--acc);   background:var(--acc-lo); }
+.cat-badge.load { color:var(--muted); }
+.cat-arr { color:var(--muted); font-size:22px; flex-shrink:0; }
 
-/* PLAN CARDS */
-.plans { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+/* ──── PLAN CARDS ──── */
 .plan {
-  background:var(--surface); border:1.5px solid var(--border);
-  border-radius:var(--r); padding:14px 16px;
+  background:var(--surf); border:1.5px solid var(--brd);
+  border-radius:var(--r); padding:14px 15px;
   cursor:pointer; display:flex; align-items:center; gap:12px;
-  transition:border-color .15s,background .15s,transform .1s;
-  position:relative;
+  transition:border-color .12s, background .12s, transform .08s;
+  position:relative; margin-bottom:9px;
 }
 .plan:active { transform:scale(.99); }
-.plan.sel { border-color:var(--accent); background:var(--accent-glow); }
-.plan.forever { border-color:var(--gold); }
-.plan.forever.sel { background:rgba(244,196,48,.08); }
-.plan.disabled { opacity:.4; pointer-events:none; }
+.plan.sel { border-color:var(--acc); background:var(--acc-lo); }
+.plan.forever { border-color:rgba(244,196,48,.3); }
+.plan.forever.sel { background:rgba(244,196,48,.07); border-color:var(--gold); }
+.plan.out { opacity:.42; pointer-events:none; }
 
 .radio {
-  width:20px; height:20px; border-radius:50%; border:2px solid var(--border);
-  flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  transition:all .15s;
+  width:21px; height:21px; border-radius:50%; border:2px solid var(--brd); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; transition:all .12s;
 }
-.plan.sel .radio { border-color:var(--accent); background:var(--accent); }
+.plan.sel .radio { border-color:var(--acc); background:var(--acc); }
 .plan.forever.sel .radio { border-color:var(--gold); background:var(--gold); }
 .radio::after { content:''; display:none; width:7px; height:7px; background:#fff; border-radius:50%; }
 .plan.sel .radio::after { display:block; }
 
-.p-ico { width:44px; height:44px; border-radius:12px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.p-ico { width:44px; height:44px; border-radius:12px; background:var(--surf2); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
 .p-meta { flex:1; min-width:0; }
 .p-name { font-size:15px; font-weight:800; }
 .p-stock { font-size:11px; font-weight:700; margin-top:3px; }
-.p-stock.ok { color:var(--green); }
+.p-stock.ok  { color:var(--green); }
 .p-stock.low { color:#ff9f0a; }
-.p-stock.out { color:var(--accent); }
+.p-stock.out { color:var(--acc); }
 .p-right { text-align:right; flex-shrink:0; }
-.p-price { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:1px; line-height:1; }
+.p-price { font-family:'Bebas Neue', sans-serif; font-size:24px; letter-spacing:1px; line-height:1; }
 .p-stars { font-size:11px; color:var(--gold); margin-top:2px; }
-.hot { position:absolute; top:-1px; right:-1px; background:var(--gold); color:#1a1200; font-size:9px; font-weight:900; padding:3px 9px; border-radius:0 var(--r) 0 10px; text-transform:uppercase; letter-spacing:.5px; }
 
-/* SUMMARY */
+.hot-badge {
+  position:absolute; top:-1px; right:-1px;
+  background:var(--gold); color:#1a1200;
+  font-size:9px; font-weight:900; padding:3px 9px;
+  border-radius:0 var(--r) 0 10px;
+  text-transform:uppercase; letter-spacing:.5px;
+}
+
+/* ──── SUMMARY ──── */
 .sum {
-  background:var(--surface); border:1px solid var(--border);
+  background:var(--surf); border:1px solid var(--brd);
   border-radius:var(--r); padding:14px 16px; margin-bottom:16px;
 }
 .sum-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
-.sum-row+.sum-row { border-top:1px solid var(--border); padding-top:10px; margin-top:5px; }
+.sum-row + .sum-row { border-top:1px solid var(--brd); padding-top:10px; margin-top:5px; }
 .sl { font-size:13px; color:var(--muted); }
 .sv { font-size:13px; font-weight:700; }
-.sum-row.tot .sl { font-size:14px; font-weight:700; color:var(--text); }
-.sum-row.tot .sv { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--accent); letter-spacing:1px; }
+.sum-row.tot .sl { font-size:14px; font-weight:700; color:var(--txt); }
+.sum-row.tot .sv { font-family:'Bebas Neue', sans-serif; font-size:26px; color:var(--acc); letter-spacing:1px; }
 
-/* PAY BTN */
+/* ──── PAY BUTTON ──── */
 .btn {
-  width:100%; padding:17px; background:var(--accent); color:#fff; border:none;
-  border-radius:var(--r); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px;
-  cursor:pointer; transition:opacity .2s,transform .1s; position:relative; overflow:hidden;
+  width:100%; padding:17px; background:var(--acc); color:#fff; border:none;
+  border-radius:var(--r); font-family:'Bebas Neue', sans-serif; font-size:20px; letter-spacing:2px;
+  cursor:pointer; transition:opacity .15s, transform .1s, background .2s;
+  position:relative; overflow:hidden;
 }
-.btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 60%); }
+.btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,.1) 0%, transparent 55%); pointer-events:none; }
 .btn:active { transform:scale(.98); }
-.btn:disabled { opacity:.45; cursor:not-allowed; }
-
-/* API ERROR BLOCK */
-.api-err-block {
-  background:rgba(230,57,70,.08); border:1px solid rgba(230,57,70,.3);
-  border-radius:var(--r); padding:20px; text-align:center;
-  margin-bottom:16px; display:none;
+.btn:disabled { opacity:.38; cursor:not-allowed; }
+.btn.loading::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 25%, rgba(255,255,255,.12) 50%, transparent 75%);
+  background-size:200% 100%; animation:shimmer 1.2s linear infinite;
 }
-.api-err-block.on { display:block; }
-.api-err-block .ico { font-size:36px; margin-bottom:10px; }
-.api-err-block .ttl { font-size:16px; font-weight:800; margin-bottom:6px; }
-.api-err-block .msg { font-size:12px; color:var(--muted); line-height:1.6; }
-.api-err-block .retry-btn {
-  margin-top:14px; padding:10px 24px; background:var(--accent); color:#fff;
-  border:none; border-radius:10px; font-family:'Nunito',sans-serif;
-  font-size:13px; font-weight:700; cursor:pointer;
-}
+@keyframes shimmer { to { background-position:-200% 0; } }
 
-/* INFO */
-.infos { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+/* ──── INFO ROWS ──── */
+.infos { display:flex; flex-direction:column; gap:7px; margin-top:16px; }
 .info-row {
   display:flex; align-items:flex-start; gap:10px;
-  background:rgba(255,255,255,.03); border:1px solid var(--border);
-  border-radius:var(--rs); padding:11px 13px;
-  font-size:12px; color:var(--muted); line-height:1.5;
+  background:rgba(255,255,255,.025); border:1px solid var(--brd);
+  border-radius:var(--rs); padding:10px 12px;
+  font-size:12px; color:var(--muted); line-height:1.55;
 }
-.ii { font-size:15px; flex-shrink:0; }
+.ii { font-size:15px; flex-shrink:0; margin-top:1px; }
 
-/* LOADING */
-.spin-wrap { text-align:center; padding:60px 20px; }
-.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 14px; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.spin-txt { font-size:13px; color:var(--muted); }
-
-/* OVERLAY */
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+/* ──── OVERLAY ──── */
+.overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.85);
+  z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:14px;
+}
 .overlay.on { display:flex; }
 .ov-txt { color:var(--muted); font-size:13px; }
 
-/* TOAST */
+/* ──── TOAST ──── */
 .toast {
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(70px);
-  background:#2c2c2e; color:var(--text); padding:10px 20px; border-radius:22px;
-  font-size:13px; z-index:1000; transition:transform .3s ease;
-  border:1px solid var(--border); max-width:88vw; text-align:center;
-  white-space:pre-line;
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:#2c2c2e; color:var(--txt); padding:11px 22px; border-radius:24px;
+  font-size:13px; font-weight:600; z-index:1000; border:1px solid var(--brd);
+  max-width:88vw; text-align:center; white-space:pre-line;
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
 }
 .toast.on { transform:translateX(-50%) translateY(0); }
 
-/* ERROR */
-.err { text-align:center; padding:60px 20px; display:none; }
-.err.on { display:block; }
-.err-ico { font-size:52px; margin-bottom:14px; }
-.err-ttl { font-size:20px; font-weight:800; margin-bottom:8px; }
-.err-msg { color:var(--muted); font-size:14px; line-height:1.6; }
+/* ──── SUCCESS SCREEN ──── */
+.success-wrap { text-align:center; padding:50px 20px; }
+.success-ico { font-size:64px; margin-bottom:16px; animation:popIn .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+.success-ttl { font-family:'Bebas Neue', sans-serif; font-size:28px; letter-spacing:2px; margin-bottom:10px; }
+.success-msg { font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:24px; }
 </style>
 </head>
 <body>
 
-<!-- ─── ЭКРАН 1: КАТЕГОРИИ ─── -->
+<!-- ═══════════════════════════════════
+     ЭКРАН 1: КАТЕГОРИИ
+════════════════════════════════════ -->
 <div class="screen active" id="s1">
   <div class="hdr">
-    <div class="hdr-glow"></div>
     <div class="logo">Klukva<em>DLC</em></div>
     <div class="logo-sub">Магазин ключей</div>
-    <div class="user-pill"><span class="dot" id="connDot"></span><span id="uname1">—</span></div>
+    <div class="user-pill"><span class="dot grey" id="dot1"></span><span id="uname1">Загрузка...</span></div>
   </div>
-  <div class="api-bar loading" id="apiBar">
-    <span id="apiBarTxt">⏳ Проверяем соединение с сервером...</span>
+  <div class="api-bar load" id="apiBar1">
+    <span id="apiBarTxt1">⏳ Проверяем соединение...</span>
   </div>
   <div class="cnt">
-    <div class="spin-wrap" id="cLoad"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
-    <div style="display:none" id="cContent">
-      <div class="api-err-block" id="catApiErr">
-        <div class="ico">🔌</div>
-        <div class="ttl">Сервер недоступен</div>
-        <div class="msg">Не удалось подключиться к серверу.<br>Проверь, что бот запущен и сервер работает.<br><br>URL: <code id="errApiUrl" style="font-size:10px;color:var(--accent)"></code></div>
-        <button class="retry-btn" onclick="retryLoad()">🔄 Повторить</button>
+    <div class="spin-wrap" id="s1Spin"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
+    <div style="display:none" id="s1Content">
+      <div class="err-block" id="connErr">
+        <div class="eb-ico">🔌</div>
+        <div class="eb-ttl">Сервер недоступен</div>
+        <div class="eb-msg">
+          Не удалось подключиться к серверу.<br>
+          Проверь, что бот запущен и сервер работает.
+        </div>
+        <div class="eb-url" id="errUrl"></div>
+        <button class="retry-btn" onclick="loadCats()">🔄 Повторить</button>
       </div>
-      <div id="cCatsWrap">
+      <div id="catWrap" style="display:none">
         <div class="lbl">Выбери товар</div>
-        <div class="cats" id="catList"></div>
+        <div id="catList"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ─── ЭКРАН 2: ТАРИФЫ ─── -->
+<!-- ═══════════════════════════════════
+     ЭКРАН 2: ТАРИФЫ
+════════════════════════════════════ -->
 <div class="screen" id="s2">
   <div class="hdr">
-    <div class="hdr-glow"></div>
-    <button class="back-btn" id="backBtn" onclick="goBack()">‹ Назад</button>
+    <button class="back-btn" id="backBtn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Назад
+    </button>
     <div class="logo" id="s2Logo">Klukva<em>DLC</em></div>
     <div class="logo-sub" id="s2Sub">Ключи для ПК</div>
-    <div class="user-pill"><span class="dot" id="connDot2"></span><span id="uname2">—</span></div>
+    <div class="user-pill"><span class="dot grey" id="dot2"></span><span id="uname2">—</span></div>
   </div>
-  <div class="api-bar loading" id="apiBar2">
-    <span id="apiBarTxt2">⏳ Загрузка тарифов...</span>
+  <div class="api-bar load" id="apiBar2">
+    <span id="apiBarTxt2">⏳ Загружаем тарифы...</span>
   </div>
   <div class="cnt">
-    <div class="spin-wrap" id="pLoad"><div class="spinner"></div><div class="spin-txt">Загружаем тарифы...</div></div>
-    <div style="display:none" id="pContent">
-      <div class="lbl">Выбери период</div>
-      <div class="plans" id="planList"></div>
-      <div class="sum">
-        <div class="sum-row"><span class="sl">Тариф</span><span class="sv" id="sumPlan">—</span></div>
-        <div class="sum-row tot"><span class="sl">💰 К оплате</span><span class="sv" id="sumPrice">—</span></div>
+    <div class="spin-wrap" id="s2Spin"><div class="spinner"></div><div class="spin-txt">Загружаем тарифы...</div></div>
+    <div style="display:none" id="s2Content">
+      <div class="err-block" id="planErr">
+        <div class="eb-ico">😔</div>
+        <div class="eb-ttl" id="planErrTtl">Нет в наличии</div>
+        <div class="eb-msg" id="planErrMsg">Товары временно закончились.</div>
       </div>
-      <button class="btn" id="payBtn" onclick="pay()">💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA</button>
-      <div class="infos">
-        <div class="info-row"><span class="ii">⚡</span><span>Ключ придёт <b>автоматически</b> в Telegram сразу после оплаты</span></div>
-        <div class="info-row"><span class="ii">🎟️</span><span>Одноразовая ссылка в закрытую группу — тоже автоматически</span></div>
-        <div class="info-row"><span class="ii">🔒</span><span>Безопасная оплата — карты, СБП, FKWallet</span></div>
+      <div id="plansWrap">
+        <div class="lbl">Выбери период</div>
+        <div id="planList"></div>
+        <div class="sum">
+          <div class="sum-row"><span class="sl">Тариф</span><span class="sv" id="sumPlan">—</span></div>
+          <div class="sum-row tot"><span class="sl">💰 К оплате</span><span class="sv" id="sumPrice">—</span></div>
+        </div>
+        <button class="btn" id="payBtn" onclick="pay()">💳 ОПЛАТИТЬ</button>
+        <div class="infos">
+          <div class="info-row"><span class="ii">⚡</span><span>Ключ придёт <b>автоматически</b> в Telegram сразу после оплаты</span></div>
+          <div class="info-row"><span class="ii">🎟️</span><span>Одноразовая ссылка в закрытую группу — тоже автоматически</span></div>
+          <div class="info-row"><span class="ii">🔒</span><span>Безопасная оплата — карты, СБП, FKWallet</span></div>
+        </div>
       </div>
-    </div>
-    <div class="err" id="pErr">
-      <div class="err-ico">😔</div>
-      <div class="err-ttl" id="pErrTitle">Нет в наличии</div>
-      <div class="err-msg" id="pErrMsg">Товары временно закончились.<br>Следи за обновлениями!</div>
     </div>
   </div>
 </div>
 
-<!-- OVERLAY -->
+<!-- ═══════════════════════════════════
+     ЭКРАН 3: УСПЕХ
+════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="cnt" style="display:flex;align-items:center;justify-content:center;flex:1">
+    <div class="success-wrap">
+      <div class="success-ico">🎉</div>
+      <div class="success-ttl">Платёжная страница открыта!</div>
+      <div class="success-msg">
+        После оплаты ключ придёт<br>
+        <b>автоматически</b> в Telegram 🔑<br><br>
+        Не закрывай приложение до завершения оплаты.
+      </div>
+      <button class="btn" style="max-width:260px;margin:0 auto;display:block" id="openPayBtn">
+        🔗 Открыть оплату снова
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY & TOAST -->
 <div class="overlay" id="overlay">
   <div class="spinner"></div>
-  <div class="ov-txt">Создаём заказ...</div>
+  <div class="ov-txt" id="ovTxt">Создаём заказ...</div>
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- ═══════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════════════════════════
-//   КОНФИГ — замени на свой URL сервера
-//   ВАЖНО: нужен HTTPS! Настрой nginx + certbot
-//   Если тестируешь локально — используй ngrok/cloudflared
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════
+//   ⚙️  КОНФИГ
+//   Замени на URL твоего сервера (должен быть HTTPS!)
+//   В боте: MINIAPP_URL = "https://makizenin139.github.io/KlukvaDLC-shop/"
+// ══════════════════════════════════════
 const API = "https://klukvadlc.ddns.net";
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════
 
-const tg = window.Telegram?.WebApp || {
-  ready:()=>{}, expand:()=>{},
-  openLink: url => window.open(url,'_blank'),
-  setHeaderColor:()=>{}, setBackgroundColor:()=>{},
-  HapticFeedback:{ selectionChanged:()=>{}, impactOccurred:()=>{} },
-  initData:'',
-  initDataUnsafe:{ user:{ id:0, first_name:'Тест' } }
+// ─── Telegram WebApp init ───
+const tg = window.Telegram?.WebApp ?? {
+  ready: () => {}, expand: () => {},
+  openLink: url => window.open(url, '_blank'),
+  setHeaderColor: () => {}, setBackgroundColor: () => {},
+  HapticFeedback: { selectionChanged: () => {}, impactOccurred: () => {} },
+  initData: '',
+  initDataUnsafe: { user: { id: 0, first_name: 'Гость' } }
 };
-tg.ready(); tg.expand();
-tg.setHeaderColor('#111113');
-tg.setBackgroundColor('#111113');
+tg.ready();
+tg.expand();
+try { tg.setHeaderColor('#0e0e10'); tg.setBackgroundColor('#0e0e10'); } catch {}
 
-const UID   = tg.initDataUnsafe?.user?.id || 0;
+// ─── URL params (бот передаёт uid и days) ───
+const urlP      = new URLSearchParams(window.location.search);
+const PARAM_UID  = parseInt(urlP.get('uid'))  || 0;
+const PARAM_DAYS = parseInt(urlP.get('days')) || 0;
+
+// UID: сначала из TG WebApp, затем из URL-параметра
+const UID   = tg.initDataUnsafe?.user?.id || PARAM_UID || 0;
 const UNAME = tg.initDataUnsafe?.user?.first_name || 'Гость';
 const IDATA = tg.initData || '';
 
+// ─── Обновляем имя пользователя в шапке ───
 document.getElementById('uname1').textContent = UNAME;
 document.getElementById('uname2').textContent = UNAME;
-document.getElementById('errApiUrl').textContent = API;
+document.getElementById('errUrl').textContent = 'URL: ' + API;
 
-let selDays = null, plans = [], curCat = null, apiOk = false;
+// ─── Состояние ───
+let selDays  = null;
+let plans    = [];
+let curCat   = null;
+let apiOk    = false;
+let lastPayUrl = null;
 
-// ─── helpers ───
-const g = id => document.getElementById(id);
-const hide = id => { const el=g(id); if(el) el.style.display='none'; };
-const show = id => { const el=g(id); if(el) el.style.display='block'; };
+// ─── Helpers ───
+const g    = id => document.getElementById(id);
+const hide = id => g(id) && (g(id).style.display = 'none');
+const show = (id, d = 'block') => g(id) && (g(id).style.display = d);
 
-function setApiStatus(ok, msg) {
+function setApiStatus(ok, msg = '') {
   apiOk = ok;
-  ['apiBar','apiBar2'].forEach(id => {
-    const bar = g(id);
-    if(!bar) return;
-    bar.className = 'api-bar ' + (ok ? 'ok' : 'fail');
-  });
-  ['apiBarTxt','apiBarTxt2'].forEach(id => {
-    const el = g(id);
-    if(el) el.textContent = ok
-      ? `✅ Сервер доступен — данные актуальны`
-      : `❌ Сервер недоступен: ${msg || 'нет соединения'}`;
-  });
-  ['connDot','connDot2'].forEach(id => {
-    const el = g(id);
-    if(el) { el.className = 'dot' + (ok ? '' : ' red'); }
+  ['1','2'].forEach(n => {
+    const bar = g('apiBar' + n);
+    const txt = g('apiBarTxt' + n);
+    const dot = g('dot' + n);
+    if (bar) bar.className = 'api-bar ' + (ok ? 'ok' : msg ? 'fail' : 'load');
+    if (txt) txt.textContent = ok
+      ? '✅ Сервер доступен'
+      : msg ? `❌ Сервер недоступен: ${msg}` : '⏳ Проверяем...';
+    if (dot) dot.className = 'dot ' + (ok ? 'green' : msg ? 'red' : 'grey');
   });
 }
 
 let _toastTimer = null;
-function toast(msg, ms=3200) {
+function toast(msg, ms = 3200) {
   const t = g('toast');
   t.textContent = msg; t.classList.add('on');
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(()=>t.classList.remove('on'), ms);
+  _toastTimer = setTimeout(() => t.classList.remove('on'), ms);
 }
-function overlay(on, txt='Создаём заказ...') {
-  g('overlay').querySelector('.ov-txt').textContent = txt;
+
+function overlay(on, txt = 'Создаём заказ...') {
+  g('ovTxt').textContent = txt;
   g('overlay').classList.toggle('on', on);
 }
-function screen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   g(id).classList.add('active');
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
 // ─── API fetch с таймаутом ───
-async function apiFetch(path, opts={}, timeoutMs=8000) {
-  const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), timeoutMs);
+async function apiFetch(path, opts = {}, ms = 9000) {
+  const ctrl = new AbortController();
+  const tid  = setTimeout(() => ctrl.abort(), ms);
   try {
-    const r = await fetch(API + path, { ...opts, signal: controller.signal });
+    const r = await fetch(API + path, { ...opts, signal: ctrl.signal });
     clearTimeout(tid);
     return r;
-  } catch(e) {
+  } catch (e) {
     clearTimeout(tid);
     throw e;
   }
 }
 
-// ─── ЭКРАН 1: Категории ───
+// ════════════════════════════════
+//   ЭКРАН 1 — КАТЕГОРИИ
+// ════════════════════════════════
 async function loadCats() {
-  hide('cContent'); show('cLoad');
-  setApiStatus(false, '');
-  g('apiBar').className = 'api-bar loading';
-  g('apiBarTxt').textContent = '⏳ Проверяем соединение...';
+  hide('s1Content'); show('s1Spin');
+  setApiStatus(false);
+  g('connErr').classList.remove('on');
+  hide('catWrap');
 
   let cats = null;
   try {
     const r = await apiFetch('/miniapp/categories');
-    if (r.ok) {
-      cats = await r.json();
-      setApiStatus(true);
-    } else {
-      setApiStatus(false, `HTTP ${r.status}`);
-    }
-  } catch(e) {
-    const msg = e.name === 'AbortError' ? 'таймаут' : (e.message || 'нет соединения');
-    setApiStatus(false, msg);
+    if (r.ok) { cats = await r.json(); setApiStatus(true); }
+    else { setApiStatus(false, `HTTP ${r.status}`); }
+  } catch (e) {
+    const m = e.name === 'AbortError' ? 'таймаут' : (e.message || 'нет соединения');
+    setApiStatus(false, m);
   }
 
-  hide('cLoad'); show('cContent');
+  hide('s1Spin');
+  show('s1Content');
 
   if (!cats) {
-    // Показываем ошибку подключения, но рендерим базовую категорию
-    g('catApiErr').classList.add('on');
-    // Рендерим fallback категорию с пометкой, что данные недоступны
-    cats = [{ id:'klukvadlc', name:'KlukvaDLC', desc:'Ключи для ПК', icon:'🍓', color:'#e63946' }];
+    // Показываем ошибку, но даём фолбэк-категорию
+    g('connErr').classList.add('on');
+    cats = [{ id: 'klukvadlc', name: 'KlukvaDLC', desc: 'Ключи для ПК', icon: '🍓', color: '#e63946' }];
   } else {
-    g('catApiErr').classList.remove('on');
+    g('connErr').classList.remove('on');
   }
 
-  // Подгружаем количество ключей для каждой категории
   renderCats(cats, !apiOk);
-  if (apiOk) {
-    loadCatStocks(cats);
+  show('catWrap');
+
+  if (apiOk) loadCatStocks(cats);
+
+  // Если бот передал days — сразу переходим к тарифам
+  if (apiOk && PARAM_DAYS) {
+    const cat = cats[0];
+    if (cat) openCat(cat, false);
   }
 }
 
 async function loadCatStocks(cats) {
-  // Для каждой категории подгружаем суммарный остаток
   for (const c of cats) {
     try {
       const r = await apiFetch(`/miniapp/plans?cat=${c.id}`);
       if (r.ok) {
-        const ps = await r.json();
+        const ps    = await r.json();
         const total = ps.reduce((s, p) => s + (p.stock || 0), 0);
-        const el = g(`cat-stock-${c.id}`);
+        const el    = g('cat-stock-' + c.id);
         if (el) {
           el.textContent = total > 0 ? `✓ ${total} ключей в наличии` : '✕ Нет в наличии';
-          el.className = `cat-stock ${total > 0 ? '' : 'out'}`;
+          el.className   = 'cat-badge ' + (total > 0 ? 'ok' : 'out');
         }
       }
     } catch {}
   }
 }
 
-function renderCats(cats, offline=false) {
-  const list = g('catList'); list.innerHTML = '';
+function renderCats(cats, offline = false) {
+  const list = g('catList');
+  list.innerHTML = '';
   cats.forEach(c => {
     const el = document.createElement('div');
     el.className = 'cat';
-    el.onclick = () => openCat(c, offline);
+    el.onclick   = () => openCat(c, offline);
     el.innerHTML = `
-      <div class="cat-ico" style="background:${c.color||'#e63946'}22">${c.icon||'🔑'}</div>
+      <div class="cat-ico" style="background:${c.color || '#e63946'}22">${c.icon || '🔑'}</div>
       <div class="cat-info">
         <div class="cat-name">${c.name}</div>
         <div class="cat-desc">${c.desc}</div>
-        <div class="cat-stock loading" id="cat-stock-${c.id}">${offline ? '⚠ Сервер недоступен' : '⏳ Считаем...'}</div>
+        <div class="cat-badge load" id="cat-stock-${c.id}">
+          ${offline ? '⚠ Нет связи' : '⏳ Загрузка...'}
+        </div>
       </div>
       <div class="cat-arr">›</div>`;
     list.appendChild(el);
   });
 }
 
-function openCat(c, offline=false) {
+function openCat(c, offline = false) {
   if (offline) {
-    toast('❌ Сервер недоступен.\nПроверь что бот запущен и настроен HTTPS.');
+    toast('❌ Сервер недоступен.\nПроверь, что бот запущен и настроен HTTPS.');
     return;
   }
   tg.HapticFeedback.impactOccurred?.('light');
   curCat = c;
   g('s2Logo').innerHTML = `Klukva<em>DLC</em>`;
-  g('s2Sub').textContent = c.desc;
+  g('s2Sub').textContent  = c.desc;
   g('backBtn').style.display = 'flex';
-  screen('s2'); loadPlans();
+  goScreen('s2');
+  loadPlans();
 }
 
 function goBack() {
   tg.HapticFeedback.impactOccurred?.('light');
-  screen('s1'); selDays = null;
+  goScreen('s1');
+  selDays = null;
 }
 
-function retryLoad() {
-  loadCats();
-}
-
-// ─── ЭКРАН 2: Тарифы ───
+// ════════════════════════════════
+//   ЭКРАН 2 — ТАРИФЫ
+// ════════════════════════════════
 async function loadPlans() {
-  show('pLoad'); hide('pContent'); g('pErr').classList.remove('on');
-  g('apiBar2').className = 'api-bar loading';
+  hide('s2Content'); show('s2Spin');
+  g('planErr').classList.remove('on');
+  g('apiBar2').className  = 'api-bar load';
   g('apiBarTxt2').textContent = '⏳ Загружаем тарифы...';
 
-  let loadedFromApi = false;
+  let ok = false;
   try {
-    const r = await apiFetch(`/miniapp/plans?cat=${curCat?.id||''}`);
+    const r = await apiFetch(`/miniapp/plans?cat=${curCat?.id || ''}`);
     if (r.ok) {
       const data = await r.json();
-      if (Array.isArray(data) && data.length > 0) {
-        plans = data;
-        loadedFromApi = true;
-        setApiStatus(true);
-      } else {
-        setApiStatus(false, 'пустой ответ');
-      }
-    } else {
-      setApiStatus(false, `HTTP ${r.status}`);
-    }
-  } catch(e) {
-    const msg = e.name === 'AbortError' ? 'таймаут соединения' : (e.message || 'нет соединения');
-    setApiStatus(false, msg);
+      if (Array.isArray(data) && data.length) {
+        plans = data; ok = true; setApiStatus(true);
+      } else { setApiStatus(false, 'пустой ответ'); }
+    } else { setApiStatus(false, `HTTP ${r.status}`); }
+  } catch (e) {
+    const m = e.name === 'AbortError' ? 'таймаут' : (e.message || 'нет соединения');
+    setApiStatus(false, m);
   }
 
-  hide('pLoad');
+  hide('s2Spin');
+  show('s2Content');
 
-  if (!loadedFromApi) {
-    // Показываем ошибку — не используем фейковые данные
-    g('pErrTitle').textContent = '🔌 Сервер недоступен';
-    g('pErrMsg').innerHTML = `Не удалось загрузить тарифы.<br>Проверь, что бот запущен.<br><br>
-      <small style="color:var(--muted);font-size:11px">URL: ${API}</small><br><br>
-      <button onclick="loadPlans()" style="margin-top:8px;padding:8px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:700">🔄 Повторить</button>`;
-    g('pErr').classList.add('on');
+  if (!ok) {
+    g('planErrTtl').textContent = '🔌 Сервер недоступен';
+    g('planErrMsg').innerHTML   = `Не удалось загрузить тарифы.<br>
+      <small style="color:var(--muted)">${API}</small><br><br>
+      <button class="retry-btn" onclick="loadPlans()">🔄 Повторить</button>`;
+    g('planErr').classList.add('on');
+    hide('plansWrap');
     return;
   }
 
   const avail = plans.filter(p => p.stock > 0 && p.rub > 0);
   if (!avail.length) {
-    g('pErrTitle').textContent = '😔 Нет в наличии';
-    g('pErrMsg').innerHTML = 'Товары временно закончились.<br>Следи за обновлениями!';
-    g('pErr').classList.add('on');
+    g('planErrTtl').textContent = '😔 Нет в наличии';
+    g('planErrMsg').textContent = 'Все товары временно закончились. Следи за обновлениями!';
+    g('planErr').classList.add('on');
+    hide('plansWrap');
     return;
   }
 
+  show('plansWrap');
   renderPlans();
-  sel(avail[0].days);
-  show('pContent');
+
+  // Выбираем тариф: из URL-параметра или первый доступный
+  const preselect = PARAM_DAYS && plans.find(p => p.days === PARAM_DAYS && p.stock > 0)
+    ? PARAM_DAYS
+    : avail[0].days;
+  sel(preselect);
 }
 
 function renderPlans() {
-  const list = g('planList'); list.innerHTML = '';
+  const list = g('planList');
+  list.innerHTML = '';
   plans.forEach(p => {
     if (!p.rub) return;
-    const forever = p.days===9999, hot = p.days===30;
-    const ico = forever?'♾️':p.days===1?'🔑':p.days===7?'🗝️':'🏆';
-    const out = p.stock<=0;
-    const stockCls = out?'out':p.stock<=5?'low':'ok';
-    const stockTxt = out
+    const forever = p.days === 9999;
+    const hot     = p.days === 30;
+    const ico     = forever ? '♾️' : p.days === 1 ? '🔑' : p.days === 7 ? '🗝️' : '🏆';
+    const out     = p.stock <= 0;
+    const sCls    = out ? 'out' : p.stock <= 5 ? 'low' : 'ok';
+    const sTxt    = out
       ? '✕ Закончились'
-      : p.stock<=5
-        ? `⚠ Осталось ${p.stock} шт.`
-        : `✓ В наличии: ${p.stock} шт.`;
+      : p.stock <= 5 ? `⚠ Осталось ${p.stock} шт.` : `✓ В наличии: ${p.stock} шт.`;
 
     const el = document.createElement('div');
-    el.className = `plan${forever?' forever':''}${out?' disabled':''}`;
+    el.className    = `plan${forever ? ' forever' : ''}${out ? ' out' : ''}`;
     el.dataset.days = p.days;
-    el.onclick = () => sel(p.days);
-    el.innerHTML = `
-      ${hot?'<div class="hot">🔥 Хит</div>':''}
+    el.onclick      = () => sel(p.days);
+    el.innerHTML    = `
+      ${hot ? '<div class="hot-badge">🔥 Хит</div>' : ''}
       <div class="radio"></div>
       <div class="p-ico">${ico}</div>
       <div class="p-meta">
         <div class="p-name">${p.label}</div>
-        <div class="p-stock ${stockCls}">${stockTxt}</div>
+        <div class="p-stock ${sCls}">${sTxt}</div>
       </div>
       <div class="p-right">
         <div class="p-price">${p.rub} ₽</div>
-        <div class="p-stars">⭐ ${p.stars||0}</div>
+        <div class="p-stars">⭐ ${p.stars || 0}</div>
       </div>`;
     list.appendChild(el);
   });
@@ -556,84 +640,85 @@ function renderPlans() {
 
 function sel(days) {
   selDays = days;
-  document.querySelectorAll('.plan').forEach(c=>c.classList.toggle('sel',+c.dataset.days===days));
-  const p = plans.find(x=>x.days===days);
-  if (p) {
-    g('sumPlan').textContent = p.label;
-    g('sumPrice').textContent = `${p.rub} ₽`;
-    const btn = g('payBtn');
-    if (p.stock <= 0) {
-      btn.disabled = true;
-      btn.textContent = '😔 КЛЮЧИ ЗАКОНЧИЛИСЬ';
-    } else if (!apiOk) {
-      btn.disabled = true;
-      btn.textContent = '❌ СЕРВЕР НЕДОСТУПЕН';
-    } else if (!UID) {
-      btn.disabled = true;
-      btn.textContent = '⚠ ОТКРОЙ В TELEGRAM';
-    } else {
-      btn.disabled = false;
-      btn.textContent = '💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA';
-    }
-  }
+  document.querySelectorAll('.plan').forEach(c => c.classList.toggle('sel', +c.dataset.days === days));
+  const p = plans.find(x => x.days === days);
+  if (!p) return;
+  g('sumPlan').textContent  = p.label;
+  g('sumPrice').textContent = `${p.rub} ₽`;
+  const btn = g('payBtn');
+  if (p.stock <= 0)   { btn.disabled = true;  btn.textContent = '😔 КЛЮЧИ ЗАКОНЧИЛИСЬ'; }
+  else if (!apiOk)    { btn.disabled = true;  btn.textContent = '❌ СЕРВЕР НЕДОСТУПЕН'; }
+  else if (!UID)      { btn.disabled = true;  btn.textContent = '⚠ ОТКРОЙ В TELEGRAM'; }
+  else                { btn.disabled = false; btn.textContent = '💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA'; }
   tg.HapticFeedback.selectionChanged?.();
 }
 
-// ─── ОПЛАТА ───
+// ════════════════════════════════
+//   ОПЛАТА
+// ════════════════════════════════
 async function pay() {
   if (!selDays) { toast('Выбери тариф'); return; }
-  if (!apiOk) { toast('❌ Сервер недоступен'); return; }
+  if (!apiOk)   { toast('❌ Сервер недоступен'); return; }
 
-  const p = plans.find(x=>x.days===selDays);
-  if (!p || p.stock<=0) {
-    toast('😔 Ключи закончились, следи за обновлениями!');
-    return;
-  }
+  const p = plans.find(x => x.days === selDays);
+  if (!p || p.stock <= 0) { toast('😔 Ключи закончились!'); return; }
+  if (!UID) { toast('⚠ Открой магазин через Telegram бота!\nID не определён.'); return; }
 
-  if (!UID) {
-    toast('⚠ Открой магазин через Telegram бота!\nID пользователя не определён.');
-    return;
-  }
+  tg.HapticFeedback.impactOccurred?.('medium');
 
+  const btn = g('payBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = '⏳ СОЗДАЁМ ЗАКАЗ...';
   overlay(true, 'Создаём заказ...');
 
   try {
     const r = await apiFetch('/miniapp/create_order', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'X-Telegram-Init-Data': IDATA
-      },
-      body: JSON.stringify({ days: selDays, uid: UID })
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': IDATA },
+      body:    JSON.stringify({ days: selDays, uid: UID })
     }, 15000);
 
     const data = await r.json();
     overlay(false);
+    btn.classList.remove('loading');
 
     if (!r.ok || !data.pay_url) {
-      const errMsg = data.error || `Ошибка сервера (${r.status})`;
-      toast('❌ ' + errMsg, 4000);
+      const errMsg = data.error === 'out of stock'
+        ? '😔 Ключи закончились, пока ты выбирал. Попробуй другой тариф!'
+        : `❌ ${data.error || `Ошибка сервера (${r.status})`}`;
+      toast(errMsg, 5000);
+      btn.disabled = false;
+      btn.textContent = '💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA';
+      // Обновляем остатки
+      loadPlans();
       return;
     }
 
-    // Обновляем stock в UI (минус 1)
-    const idx = plans.findIndex(x=>x.days===selDays);
-    if (idx>=0 && plans[idx].stock>0) {
-      plans[idx].stock--;
-      renderPlans();
-      sel(selDays);
-    }
+    // Сохраняем pay_url для кнопки "открыть снова"
+    lastPayUrl = data.pay_url;
+    g('openPayBtn').onclick = () => tg.openLink(lastPayUrl);
+
+    // Уменьшаем stock в UI
+    const idx = plans.findIndex(x => x.days === selDays);
+    if (idx >= 0 && plans[idx].stock > 0) plans[idx].stock--;
 
     // Открываем платёжную страницу
     tg.openLink(data.pay_url);
-    toast('✅ Платёжная страница открыта!\nПосле оплаты ключ придёт в Telegram 🔑', 5000);
 
-  } catch(e) {
+    // Переходим на экран успеха
+    goScreen('s3');
+    tg.HapticFeedback.impactOccurred?.('heavy');
+
+  } catch (e) {
     overlay(false);
-    const msg = e.name === 'AbortError'
-      ? 'Таймаут запроса. Проверь соединение.'
-      : (e.message || 'Попробуй снова');
-    toast('❌ ' + msg, 4000);
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    btn.textContent = '💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA';
+    const m = e.name === 'AbortError'
+      ? '⏱ Таймаут запроса. Проверь соединение.'
+      : `❌ ${e.message || 'Попробуй снова'}`;
+    toast(m, 5000);
   }
 }
 
@@ -644,7 +729,7 @@ setInterval(async () => {
     const r = await apiFetch(`/miniapp/plans?cat=${curCat.id}`);
     if (r.ok) {
       const fresh = await r.json();
-      if (Array.isArray(fresh) && fresh.length > 0) {
+      if (Array.isArray(fresh) && fresh.length) {
         plans = fresh;
         renderPlans();
         if (selDays) sel(selDays);
@@ -653,7 +738,7 @@ setInterval(async () => {
   } catch {}
 }, 30000);
 
-// init
+// ─── ЗАПУСК ───
 loadCats();
 </script>
 </body>
