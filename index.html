@@ -324,20 +324,45 @@ html, body { background:var(--bg); color:var(--txt); font-family:'Nunito', sans-
 </div>
 
 <!-- ═══════════════════════════════════
-     ЭКРАН 3: УСПЕХ
+     ЭКРАН 3: ОПЛАТА ГОТОВА
 ════════════════════════════════════ -->
 <div class="screen" id="s3">
-  <div class="cnt" style="display:flex;align-items:center;justify-content:center;flex:1">
-    <div class="success-wrap">
-      <div class="success-ico">🎉</div>
-      <div class="success-ttl">Платёжная страница открыта!</div>
+  <div class="hdr">
+    <div class="logo">Klukva<em>DLC</em></div>
+    <div class="logo-sub">Оплата заказа</div>
+  </div>
+  <div class="cnt" style="padding-top:30px">
+    <div class="success-wrap" style="padding:0">
+
+      <div class="success-ico">🛒</div>
+      <div class="success-ttl">Заказ создан!</div>
       <div class="success-msg">
-        После оплаты ключ придёт<br>
-        <b>автоматически</b> в Telegram 🔑<br><br>
-        Не закрывай приложение до завершения оплаты.
+        Нажми кнопку ниже — откроется страница оплаты Freekassa в браузере.<br><br>
+        После оплаты ключ придёт <b>автоматически</b> в Telegram 🔑
       </div>
-      <button class="btn" style="max-width:260px;margin:0 auto;display:block" id="openPayBtn">
-        🔗 Открыть оплату снова
+
+      <!-- Главная кнопка оплаты -->
+      <button class="btn" id="openPayBtn" style="margin-bottom:14px;font-size:18px">
+        💳 ПЕРЕЙТИ К ОПЛАТЕ
+      </button>
+
+      <!-- Копировать ссылку -->
+      <button class="btn" id="copyLinkBtn"
+        style="background:var(--surf2);border:1.5px solid var(--brd);color:var(--txt);font-size:15px;letter-spacing:1px;margin-bottom:20px">
+        📋 СКОПИРОВАТЬ ССЫЛКУ
+      </button>
+
+      <!-- Инфо блоки -->
+      <div class="infos">
+        <div class="info-row"><span class="ii">⚡</span><span>Ключ придёт в Telegram <b>автоматически</b> после оплаты</span></div>
+        <div class="info-row"><span class="ii">⏱</span><span>Ссылка действительна <b>30 минут</b></span></div>
+        <div class="info-row"><span class="ii">🔒</span><span>Оплата через <b>Freekassa</b> — карты, СБП, FKWallet</span></div>
+      </div>
+
+      <!-- Назад -->
+      <button onclick="goScreen('s2')"
+        style="margin-top:20px;background:none;border:none;color:var(--muted);font-size:13px;font-family:'Nunito',sans-serif;cursor:pointer;text-decoration:underline">
+        ← Выбрать другой тариф
       </button>
     </div>
   </div>
@@ -695,18 +720,41 @@ async function pay() {
       return;
     }
 
-    // Сохраняем pay_url для кнопки "открыть снова"
-    lastPayUrl = data.pay_url;
-    g('openPayBtn').onclick = () => window.open(lastPayUrl, '_blank');
-
     // Уменьшаем stock в UI
     const idx = plans.findIndex(x => x.days === selDays);
     if (idx >= 0 && plans[idx].stock > 0) plans[idx].stock--;
 
-    // Открываем в системном браузере (tg.openLink блокирует pay.freekassa.com)
-    window.open(data.pay_url, '_blank');
+    // Сохраняем pay_url
+    lastPayUrl = data.pay_url;
 
-    // Переходим на экран успеха
+    // Кнопка "Перейти к оплате" — открываем через tg.openLink (внешний браузер)
+    g('openPayBtn').onclick = () => {
+      try {
+        tg.openLink(lastPayUrl, { try_instant_view: false });
+      } catch(e) {
+        // Запасной вариант если старый SDK
+        window.location.href = lastPayUrl;
+      }
+    };
+
+    // Кнопка "Скопировать ссылку"
+    g('copyLinkBtn').onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(lastPayUrl);
+        g('copyLinkBtn').textContent = '✅ ССЫЛКА СКОПИРОВАНА';
+        setTimeout(() => { g('copyLinkBtn').textContent = '📋 СКОПИРОВАТЬ ССЫЛКУ'; }, 2500);
+      } catch(e) {
+        // Фолбэк для старых браузеров
+        const ta = document.createElement('textarea');
+        ta.value = lastPayUrl; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        g('copyLinkBtn').textContent = '✅ ССЫЛКА СКОПИРОВАНА';
+        setTimeout(() => { g('copyLinkBtn').textContent = '📋 СКОПИРОВАТЬ ССЫЛКУ'; }, 2500);
+      }
+    };
+
+    // Переходим на экран с кнопкой оплаты
     goScreen('s3');
     tg.HapticFeedback.impactOccurred?.('heavy');
 
