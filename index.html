@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KlukvaDLC Shop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --bg: #111113;
+  --surface: #1c1c1f;
+  --surface2: #242428;
+  --border: #2a2a2e;
+  --accent: #e63946;
+  --accent-glow: rgba(230,57,70,0.15);
+  --gold: #f4c430;
+  --green: #34c759;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --r: 16px;
+  --rs: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { background:var(--bg); color:var(--text); font-family:'Nunito',sans-serif; min-height:100vh; overflow-x:hidden; }
+
+.screen { display:none; flex-direction:column; min-height:100vh; }
+.screen.active { display:flex; }
+
+/* HEADER */
+.hdr {
+  padding:20px 18px 16px;
+  background:linear-gradient(160deg,#1c0808 0%,var(--bg) 55%);
+  border-bottom:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.hdr-glow {
+  position:absolute; top:-60px; right:-40px;
+  width:200px; height:200px;
+  background:radial-gradient(circle,rgba(230,57,70,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:3px; line-height:1; }
+.logo em { color:var(--accent); font-style:normal; }
+.logo-sub { font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
+.back-btn {
+  display:none; align-items:center; gap:5px;
+  background:none; border:none; color:var(--accent);
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; margin-bottom:10px; padding:0;
+}
+.user-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:20px; padding:4px 12px;
+  font-size:12px; color:var(--muted); margin-top:10px;
+}
+.dot { width:6px; height:6px; background:var(--green); border-radius:50%; flex-shrink:0; }
+
+/* CONTENT */
+.cnt { padding:18px; flex:1; max-width:480px; width:100%; margin:0 auto; }
+.lbl { font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:12px; padding-left:2px; }
+
+/* CATEGORY CARDS */
+.cats { display:flex; flex-direction:column; gap:12px; }
+.cat {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:20px 18px;
+  cursor:pointer; display:flex; align-items:center; gap:16px;
+  transition:border-color .2s,background .2s,transform .1s;
+  position:relative; overflow:hidden;
+}
+.cat:active { transform:scale(.98); }
+.cat:hover { border-color:var(--accent); background:var(--accent-glow); }
+.cat-ico {
+  width:52px; height:52px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0;
+}
+.cat-info { flex:1; }
+.cat-name { font-size:18px; font-weight:800; }
+.cat-desc { font-size:13px; color:var(--muted); margin-top:2px; }
+.cat-arr { color:var(--muted); font-size:22px; margin-left:auto; line-height:1; }
+
+/* PLAN CARDS */
+.plans { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.plan {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:var(--r); padding:14px 16px;
+  cursor:pointer; display:flex; align-items:center; gap:12px;
+  transition:border-color .15s,background .15s,transform .1s;
+  position:relative;
+}
+.plan:active { transform:scale(.99); }
+.plan.sel { border-color:var(--accent); background:var(--accent-glow); }
+.plan.forever { border-color:var(--gold); }
+.plan.forever.sel { background:rgba(244,196,48,.08); }
+.plan.disabled { opacity:.4; pointer-events:none; }
+
+.radio {
+  width:20px; height:20px; border-radius:50%; border:2px solid var(--border);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+}
+.plan.sel .radio { border-color:var(--accent); background:var(--accent); }
+.plan.forever.sel .radio { border-color:var(--gold); background:var(--gold); }
+.radio::after { content:''; display:none; width:7px; height:7px; background:#fff; border-radius:50%; }
+.plan.sel .radio::after { display:block; }
+
+.p-ico { width:44px; height:44px; border-radius:12px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.p-meta { flex:1; min-width:0; }
+.p-name { font-size:15px; font-weight:800; }
+.p-stock { font-size:11px; font-weight:700; margin-top:3px; }
+.p-stock.ok { color:var(--green); }
+.p-stock.low { color:#ff9f0a; }
+.p-stock.out { color:var(--accent); }
+.p-right { text-align:right; flex-shrink:0; }
+.p-price { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:1px; line-height:1; }
+.p-stars { font-size:11px; color:var(--gold); margin-top:2px; }
+.hot { position:absolute; top:-1px; right:-1px; background:var(--gold); color:#1a1200; font-size:9px; font-weight:900; padding:3px 9px; border-radius:0 var(--r) 0 10px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* SUMMARY */
+.sum {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r); padding:14px 16px; margin-bottom:16px;
+}
+.sum-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
+.sum-row+.sum-row { border-top:1px solid var(--border); padding-top:10px; margin-top:5px; }
+.sl { font-size:13px; color:var(--muted); }
+.sv { font-size:13px; font-weight:700; }
+.sum-row.tot .sl { font-size:14px; font-weight:700; color:var(--text); }
+.sum-row.tot .sv { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--accent); letter-spacing:1px; }
+
+/* PAY BTN */
+.btn {
+  width:100%; padding:17px; background:var(--accent); color:#fff; border:none;
+  border-radius:var(--r); font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:2px;
+  cursor:pointer; transition:opacity .2s,transform .1s; position:relative; overflow:hidden;
+}
+.btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 60%); }
+.btn:active { transform:scale(.98); }
+.btn:disabled { opacity:.45; cursor:not-allowed; }
+
+/* INFO */
+.infos { display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+.info-row {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(255,255,255,.03); border:1px solid var(--border);
+  border-radius:var(--rs); padding:11px 13px;
+  font-size:12px; color:var(--muted); line-height:1.5;
+}
+.ii { font-size:15px; flex-shrink:0; }
+
+/* LOADING */
+.spin-wrap { text-align:center; padding:60px 20px; }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 14px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin-txt { font-size:13px; color:var(--muted); }
+
+/* OVERLAY */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+.overlay.on { display:flex; }
+.ov-txt { color:var(--muted); font-size:13px; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(70px);
+  background:#2c2c2e; color:var(--text); padding:10px 20px; border-radius:22px;
+  font-size:13px; z-index:1000; transition:transform .3s ease;
+  border:1px solid var(--border); max-width:88vw; text-align:center;
+}
+.toast.on { transform:translateX(-50%) translateY(0); }
+
+/* ERROR */
+.err { text-align:center; padding:60px 20px; display:none; }
+.err.on { display:block; }
+.err-ico { font-size:52px; margin-bottom:14px; }
+.err-ttl { font-size:20px; font-weight:800; margin-bottom:8px; }
+.err-msg { color:var(--muted); font-size:14px; line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- ─── ЭКРАН 1: КАТЕГОРИИ ─── -->
+<div class="screen active" id="s1">
+  <div class="hdr">
+    <div class="hdr-glow"></div>
+    <div class="logo">Klukva<em>DLC</em></div>
+    <div class="logo-sub">Магазин ключей</div>
+    <div class="user-pill"><span class="dot"></span><span id="uname1">—</span></div>
+  </div>
+  <div class="cnt">
+    <div class="spin-wrap" id="cLoad"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
+    <div style="display:none" id="cContent">
+      <div class="lbl">Выбери товар</div>
+      <div class="cats" id="catList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ЭКРАН 2: ТАРИФЫ ─── -->
+<div class="screen" id="s2">
+  <div class="hdr">
+    <div class="hdr-glow"></div>
+    <button class="back-btn" id="backBtn" onclick="goBack()">‹ Назад</button>
+    <div class="logo" id="s2Logo">Klukva<em>DLC</em></div>
+    <div class="logo-sub" id="s2Sub">Ключи для ПК</div>
+    <div class="user-pill"><span class="dot"></span><span id="uname2">—</span></div>
+  </div>
+  <div class="cnt">
+    <div class="spin-wrap" id="pLoad"><div class="spinner"></div><div class="spin-txt">Загружаем тарифы...</div></div>
+    <div style="display:none" id="pContent">
+      <div class="lbl">Тарифы</div>
+      <div class="plans" id="planList"></div>
+      <div class="sum" id="sumBox">
+        <div class="sum-row"><span class="sl">Тариф</span><span class="sv" id="sumPlan">—</span></div>
+        <div class="sum-row tot"><span class="sl">К оплате</span><span class="sv" id="sumPrice">—</span></div>
+      </div>
+      <button class="btn" id="payBtn" onclick="pay()">💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA</button>
+      <div class="infos">
+        <div class="info-row"><span class="ii">⚡</span><span>Ключ придёт <b>автоматически</b> в Telegram сразу после оплаты</span></div>
+        <div class="info-row"><span class="ii">🎟️</span><span>Одноразовая ссылка в закрытую группу — тоже автоматически</span></div>
+        <div class="info-row"><span class="ii">🔒</span><span>Безопасная оплата — карты, СБП, FKWallet</span></div>
+      </div>
+    </div>
+    <div class="err" id="pErr">
+      <div class="err-ico">😔</div>
+      <div class="err-ttl">Нет в наличии</div>
+      <div class="err-msg">Товары временно закончились.<br>Следи за обновлениями!</div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <div class="ov-txt">Создаём заказ...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════ КОНФИГ ═══════
+const API = "https://klukvadlc.ddns.net";
+// ══════════════════════
+
+const tg = window.Telegram?.WebApp || {
+  ready:()=>{}, expand:()=>{},
+  openLink: url => window.open(url,'_blank'),
+  setHeaderColor:()=>{}, setBackgroundColor:()=>{},
+  HapticFeedback:{ selectionChanged:()=>{}, impactOccurred:()=>{} },
+  initData:'',
+  initDataUnsafe:{ user:{ id:0, first_name:'Тест' } }
+};
+tg.ready(); tg.expand();
+tg.setHeaderColor('#111113');
+tg.setBackgroundColor('#111113');
+
+const UID    = tg.initDataUnsafe?.user?.id || 0;
+const UNAME  = tg.initDataUnsafe?.user?.first_name || 'Гость';
+const IDATA  = tg.initData || '';
+
+document.getElementById('uname1').textContent = UNAME;
+document.getElementById('uname2').textContent = UNAME;
+
+let selDays = null, plans = [], curCat = null;
+
+// ─── helpers ───
+const g = id => document.getElementById(id);
+const hide = id => g(id).style.display = 'none';
+const show = id => g(id).style.display = 'block';
+
+function toast(msg, ms=2800) {
+  const t = g('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), ms);
+}
+function overlay(on, txt='Создаём заказ...') {
+  g('overlay').querySelector('.ov-txt').textContent = txt;
+  g('overlay').classList.toggle('on', on);
+}
+function screen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  g(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ─── ЭКРАН 1: Категории ───
+async function loadCats() {
+  let cats;
+  try {
+    const r = await fetch(`${API}/miniapp/categories`);
+    cats = r.ok ? await r.json() : null;
+  } catch {}
+  if (!cats) cats = [{ id:'klukvadlc', name:'KlukvaDLC', desc:'Ключи для ПК', icon:'🍓', color:'#e63946' }];
+  renderCats(cats);
+}
+
+function renderCats(cats) {
+  hide('cLoad'); show('cContent');
+  const list = g('catList'); list.innerHTML = '';
+  cats.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'cat';
+    el.onclick = () => openCat(c);
+    el.innerHTML = `
+      <div class="cat-ico" style="background:${c.color}22">${c.icon}</div>
+      <div class="cat-info">
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-desc">${c.desc}</div>
+      </div>
+      <div class="cat-arr">›</div>`;
+    list.appendChild(el);
+  });
+}
+
+function openCat(c) {
+  tg.HapticFeedback.impactOccurred?.('light');
+  curCat = c;
+  g('s2Logo').innerHTML = `Klukva<em>DLC</em>`;
+  g('s2Sub').textContent = c.desc;
+  g('backBtn').style.display = 'flex';
+  screen('s2'); loadPlans();
+}
+
+function goBack() {
+  tg.HapticFeedback.impactOccurred?.('light');
+  screen('s1'); selDays = null;
+}
+
+// ─── ЭКРАН 2: Тарифы ───
+async function loadPlans() {
+  show('pLoad'); hide('pContent'); g('pErr').classList.remove('on');
+  try {
+    const r = await fetch(`${API}/miniapp/plans?cat=${curCat?.id||''}`);
+    plans = r.ok ? await r.json() : fallbackPlans();
+  } catch { plans = fallbackPlans(); }
+
+  hide('pLoad');
+  const avail = plans.filter(p=>p.stock>0&&p.rub>0);
+  if (!avail.length) { g('pErr').classList.add('on'); return; }
+  renderPlans(); sel(avail[0].days); show('pContent');
+}
+
+function fallbackPlans() {
+  return [
+    {days:1,    rub:150, stars:100, label:'1 день',     stock:99},
+    {days:7,    rub:300, stars:170, label:'1 неделя',   stock:99},
+    {days:30,   rub:450, stars:260, label:'1 месяц',    stock:99},
+    {days:9999, rub:750, stars:430, label:'Навсегда 🔥',stock:99},
+  ];
+}
+
+function renderPlans() {
+  const list = g('planList'); list.innerHTML = '';
+  plans.forEach(p => {
+    if (!p.rub) return;
+    const forever = p.days===9999, hot = p.days===30;
+    const ico = forever?'♾️':p.days===1?'🔑':p.days===7?'🗝️':'🏆';
+    const out = p.stock<=0;
+    const stockCls = out?'out':p.stock<=5?'low':'ok';
+    const stockTxt = out?'✕ Закончились':p.stock<=5?`⚠ Осталось ${p.stock} шт.`:`✓ В наличии: ${p.stock} шт.`;
+
+    const el = document.createElement('div');
+    el.className = `plan${forever?' forever':''}${out?' disabled':''}`;
+    el.dataset.days = p.days;
+    el.onclick = () => sel(p.days);
+    el.innerHTML = `
+      ${hot?'<div class="hot">🔥 Хит</div>':''}
+      <div class="radio"></div>
+      <div class="p-ico">${ico}</div>
+      <div class="p-meta">
+        <div class="p-name">${p.label}</div>
+        <div class="p-stock ${stockCls}">${stockTxt}</div>
+      </div>
+      <div class="p-right">
+        <div class="p-price">${p.rub} ₽</div>
+        <div class="p-stars">⭐ ${p.stars}</div>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+function sel(days) {
+  selDays = days;
+  document.querySelectorAll('.plan').forEach(c=>c.classList.toggle('sel',+c.dataset.days===days));
+  const p = plans.find(x=>x.days===days);
+  if (p) {
+    g('sumPlan').textContent = p.label;
+    g('sumPrice').textContent = `${p.rub} ₽`;
+    const btn = g('payBtn');
+    if (p.stock <= 0) {
+      btn.disabled = true;
+      btn.textContent = '😔 КЛЮЧИ ЗАКОНЧИЛИСЬ';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '💳 ОПЛАТИТЬ ЧЕРЕЗ FREEKASSA';
+    }
+  }
+  tg.HapticFeedback.selectionChanged?.();
+}
+
+// ─── ОПЛАТА ───
+async function pay() {
+  if (!selDays) { toast('Выбери тариф'); return; }
+  const p = plans.find(x=>x.days===selDays);
+  if (!p||p.stock<=0) { toast('😔 Ключи закончились, следи за обновлениями!'); return; }
+  if (!UID) { toast('Открой через Telegram бота'); return; }
+
+  overlay(true);
+  try {
+    const r = await fetch(`${API}/miniapp/create_order`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Telegram-Init-Data':IDATA},
+      body: JSON.stringify({days:selDays, uid:UID})
+    });
+    const data = await r.json();
+    overlay(false);
+    if (!r.ok||!data.pay_url) throw new Error(data.error||'Ошибка');
+
+    // Открываем ВНЕШНИЙ браузер — ключевой момент Mini App
+    tg.openLink(data.pay_url);
+    toast('✅ Платёжная страница открыта в браузере!', 3500);
+  } catch(e) {
+    overlay(false);
+    toast('❌ ' + (e.message||'Попробуй снова'));
+  }
+}
+
+// init
+loadCats();
+</script>
+</body>
+</html>
