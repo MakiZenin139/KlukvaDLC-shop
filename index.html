@@ -30,48 +30,20 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ── BOTTOM NAV ── */
-.nav{
-  position:fixed;bottom:0;left:0;right:0;height:var(--nav);
-  background:var(--surf);border-top:1px solid var(--brd);
-  display:flex;z-index:100;
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;border:none;background:none;
-  color:var(--muted);font-family:'Nunito',sans-serif;font-size:10px;
-  font-weight:700;cursor:pointer;position:relative;transition:color .15s;
-  letter-spacing:.3px;
-}
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--muted);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;position:relative;transition:color .15s;letter-spacing:.3px;}
 .nav-btn.active{color:var(--acc)}
 .nav-btn .ico{font-size:20px;line-height:1}
-.badge{
-  position:absolute;top:6px;right:calc(50% - 18px);
-  background:var(--acc);color:#fff;font-size:9px;font-weight:900;
-  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
-  display:none;align-items:center;justify-content:center;
-}
+.badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--acc);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;padding:0 4px;display:none;align-items:center;justify-content:center;}
 .badge.on{display:flex}
 
 /* ── HEADER ── */
-.hdr{
-  padding:18px 18px 14px;flex-shrink:0;
-  background:linear-gradient(150deg,#1a0505 0%,var(--bg) 60%);
-  border-bottom:1px solid var(--brd);position:relative;overflow:hidden;
-}
-.hdr::before{
-  content:'';position:absolute;top:-80px;right:-60px;
-  width:200px;height:200px;
-  background:radial-gradient(circle,rgba(230,57,70,.08) 0%,transparent 70%);
-  pointer-events:none;
-}
+.hdr{padding:18px 18px 14px;flex-shrink:0;background:linear-gradient(150deg,#1a0505 0%,var(--bg) 60%);border-bottom:1px solid var(--brd);position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.08) 0%,transparent 70%);pointer-events:none;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;line-height:1}
 .logo em{color:var(--acc);font-style:normal}
 .logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-.user-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--surf2);border:1px solid var(--brd);
-  border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);margin-top:8px;
-}
+.user-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--brd);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);margin-top:8px;}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s}
 .dot.g{background:var(--green);box-shadow:0 0 5px var(--green)}
 .dot.r{background:var(--acc)}
@@ -79,14 +51,48 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .dot.gr{background:var(--muted)}
 
 /* ── API BAR ── */
-.api-bar{
-  padding:5px 18px;font-size:11px;font-weight:700;
-  display:flex;align-items:center;gap:6px;flex-shrink:0;
-  border-bottom:1px solid var(--brd);transition:all .3s;
-}
+.api-bar{padding:5px 18px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--brd);transition:all .3s;}
 .api-bar.ok{color:var(--green);background:rgba(48,209,88,.05)}
 .api-bar.fail{color:var(--acc);background:rgba(230,57,70,.06)}
 .api-bar.load{color:var(--muted)}
+
+/* ══ TICKER — ПОСЛЕДНИЕ ПОКУПКИ ══ */
+.ticker-wrap{
+  overflow:hidden;
+  background:linear-gradient(90deg,rgba(230,57,70,.04) 0%,rgba(230,57,70,.10) 50%,rgba(230,57,70,.04) 100%);
+  border-bottom:1px solid rgba(230,57,70,.20);
+  padding:8px 0;
+  flex-shrink:0;
+  display:none;
+  position:relative;
+}
+.ticker-wrap.visible{display:block}
+/* Градиентные маски по краям */
+.ticker-wrap::before,.ticker-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none;
+}
+.ticker-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+.ticker-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+.ticker-inner{
+  display:inline-flex;
+  white-space:nowrap;
+  animation:ticker-rtl 30s linear infinite;
+  will-change:transform;
+}
+@keyframes ticker-rtl{
+  0%  {transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;padding:0 24px;
+  color:var(--muted);letter-spacing:.2px;
+}
+.ticker-item .ti-ico{font-size:13px;line-height:1}
+.ticker-item .ti-name{color:var(--acc)}
+.ticker-item .ti-plan{color:var(--txt)}
+.ticker-item .ti-price{color:var(--gold)}
+.ticker-item .ti-sep{color:var(--brd);margin:0 2px;opacity:.6}
 
 /* ── CONTENT ── */
 .cnt{padding:16px;flex:1;max-width:480px;width:100%;margin:0 auto}
@@ -99,12 +105,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .spin-txt{font-size:12px;color:var(--muted)}
 
 /* ── PLAN CARD ── */
-.plan{
-  background:var(--surf);border:1.5px solid var(--brd);
-  border-radius:var(--r);padding:14px 14px;
-  display:flex;align-items:center;gap:12px;
-  margin-bottom:9px;transition:border-color .15s,background .15s;
-}
+.plan{background:var(--surf);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px 14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;transition:border-color .15s,background .15s;}
 .plan.out{opacity:.4}
 .plan.forever{border-color:rgba(244,196,48,.25)}
 .p-ico{width:42px;height:42px;border-radius:12px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -116,49 +117,26 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .p-stock.out{color:var(--acc)}
 .p-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
 .p-price{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1}
-.p-stars{font-size:10px;color:var(--gold)}
-.hot-badge{
-  position:absolute;top:-1px;right:-1px;
-  background:var(--gold);color:#1a1200;
-  font-size:8px;font-weight:900;padding:3px 8px;
-  border-radius:0 var(--r) 0 8px;text-transform:uppercase;letter-spacing:.5px;
-}
+.hot-badge{position:absolute;top:-1px;right:-1px;background:var(--gold);color:#1a1200;font-size:8px;font-weight:900;padding:3px 8px;border-radius:0 var(--r) 0 8px;text-transform:uppercase;letter-spacing:.5px;}
 
 /* ── QTY CONTROL ── */
 .qty{display:flex;align-items:center;gap:0;background:var(--surf2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
-.qty-btn{
-  width:32px;height:32px;border:none;background:none;
-  color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:background .1s;
-}
+.qty-btn{width:32px;height:32px;border:none;background:none;color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s;}
 .qty-btn:active{background:var(--brd)}
 .qty-btn:disabled{color:var(--muted);cursor:not-allowed}
 .qty-val{min-width:28px;text-align:center;font-size:14px;font-weight:800}
-
-/* ── CART BADGE ON PLAN ── */
 .in-cart{border-color:var(--acc)!important;background:var(--acc2)!important}
 
-/* ── CART ITEMS ── */
-.cart-item{
-  background:var(--surf);border:1px solid var(--brd);
-  border-radius:var(--r);padding:14px;
-  display:flex;align-items:center;gap:12px;margin-bottom:8px;
-}
+/* ── CART ── */
+.cart-item{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
 .ci-info{flex:1;min-width:0}
 .ci-name{font-size:14px;font-weight:800}
 .ci-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .ci-price{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);flex-shrink:0}
-.ci-del{
-  width:32px;height:32px;border:none;background:rgba(230,57,70,.12);
-  border-radius:8px;color:var(--acc);font-size:16px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
+.ci-del{width:32px;height:32px;border:none;background:rgba(230,57,70,.12);border-radius:8px;color:var(--acc);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
 /* ── TOTAL BLOCK ── */
-.total-block{
-  background:var(--surf);border:1px solid var(--brd);
-  border-radius:var(--r);padding:14px 16px;margin:12px 0 14px;
-}
+.total-block{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;margin:12px 0 14px;}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
 .total-row+.total-row{border-top:1px solid var(--brd);padding-top:10px;margin-top:6px}
 .tl{font-size:12px;color:var(--muted)}
@@ -167,72 +145,43 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .total-row.big .tv{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--acc);letter-spacing:1px}
 
 /* ── BUTTONS ── */
-.btn{
-  width:100%;padding:16px;background:var(--acc);color:#fff;border:none;
-  border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;
-  cursor:pointer;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;
-}
+.btn{width:100%;padding:16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn.secondary{background:var(--surf2);border:1.5px solid var(--brd);color:var(--txt);font-size:15px;letter-spacing:1px}
 
-/* ── EMPTY CART ── */
+/* ── EMPTY ── */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty .e-ico{font-size:52px;margin-bottom:14px}
 .empty .e-ttl{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:8px}
 .empty .e-sub{font-size:13px;line-height:1.6}
 
-/* ── PAY SUCCESS SCREEN ── */
-.pay-screen{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:30px 20px;text-align:center;
-}
+/* ── PAY SCREEN ── */
+.pay-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;}
 .pay-ico{font-size:60px;margin-bottom:16px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 .pay-ttl{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:10px}
 .pay-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px}
-.pay-link-box{
-  width:100%;background:var(--surf2);border:1.5px solid var(--brd);
-  border-radius:var(--r);padding:12px 14px;margin-bottom:14px;
-  font-size:11px;color:var(--muted);word-break:break-all;text-align:left;
-}
+.pay-link-box{width:100%;background:var(--surf2);border:1.5px solid var(--brd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--muted);word-break:break-all;text-align:left;}
 .pay-link-box span{display:block;font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
 .pay-link-box a{color:var(--acc);text-decoration:none;font-size:12px}
 
 /* ── PROFILE ── */
-.profile-card{
-  background:var(--surf);border:1px solid var(--brd);
-  border-radius:var(--r);padding:20px;margin-bottom:12px;
-}
-.profile-avatar{
-  width:64px;height:64px;border-radius:50%;background:var(--acc2);
-  border:2px solid var(--acc);display:flex;align-items:center;
-  justify-content:center;font-size:28px;margin:0 auto 12px;
-}
+.profile-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:12px;}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--acc2);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;}
 .profile-name{font-size:18px;font-weight:800;text-align:center}
 .profile-id{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-.stat{
-  background:var(--surf2);border:1px solid var(--brd);
-  border-radius:var(--rs,10px);padding:12px;text-align:center;
-}
+.stat{background:var(--surf2);border:1px solid var(--brd);border-radius:10px;padding:12px;text-align:center;}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--acc)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700}
-
-/* ── ACTIVE KEYS ── */
-.key-card{
-  background:var(--surf);border:1px solid var(--brd);
-  border-radius:var(--r);padding:14px;margin-bottom:8px;
-}
+.key-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px;}
 .key-val{font-family:monospace;font-size:13px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:8px 10px;margin-top:8px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .copy-btn{font-size:14px;cursor:pointer;flex-shrink:0;background:none;border:none;color:var(--muted);padding:0}
 
 /* ── HISTORY ── */
-.hist-item{
-  background:var(--surf);border:1px solid var(--brd);
-  border-radius:var(--r);padding:14px;margin-bottom:8px;
-}
+.hist-item{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px;}
 .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .hist-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
 .hist-status.paid{color:var(--green);background:rgba(48,209,88,.12)}
@@ -243,10 +192,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .hist-key{font-family:monospace;font-size:11px;background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:6px 8px;margin-top:8px;word-break:break-all}
 
 /* ── ERR BLOCK ── */
-.err-block{
-  background:var(--acc2);border:1.5px solid rgba(230,57,70,.3);
-  border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px;display:none;
-}
+.err-block{background:var(--acc2);border:1.5px solid rgba(230,57,70,.3);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px;display:none;}
 .err-block.on{display:block}
 .err-block .eb-ico{font-size:36px;margin-bottom:10px}
 .err-block .eb-ttl{font-size:16px;font-weight:800;margin-bottom:6px}
@@ -256,13 +202,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .overlay.on{display:flex}
 .ov-txt{color:var(--muted);font-size:13px}
-.toast{
-  position:fixed;bottom:calc(var(--nav) + 12px);left:50%;transform:translateX(-50%) translateY(60px);
-  background:#2c2c2e;color:var(--txt);padding:10px 20px;border-radius:22px;
-  font-size:13px;z-index:1000;border:1px solid var(--brd);
-  max-width:88vw;text-align:center;white-space:pre-line;
-  transition:transform .28s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
-}
+.toast{position:fixed;bottom:calc(var(--nav) + 12px);left:50%;transform:translateX(-50%) translateY(60px);background:#2c2c2e;color:var(--txt);padding:10px 20px;border-radius:22px;font-size:13px;z-index:1000;border:1px solid var(--brd);max-width:88vw;text-align:center;white-space:pre-line;transition:transform .28s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
 .toast.on{transform:translateX(-50%) translateY(0)}
 .infos{display:flex;flex-direction:column;gap:7px;margin-top:14px}
 .info-row{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.025);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.5}
@@ -271,9 +211,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 </head>
 <body>
 
-<!-- ══════════════════════════
-     ЭКРАН 1: МАГАЗИН
-══════════════════════════ -->
+<!-- ══ ЭКРАН 1: МАГАЗИН ══ -->
 <div class="screen active" id="sShop">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -281,6 +219,12 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
     <div class="user-pill"><span class="dot gr" id="dot1"></span><span id="uname1">Загрузка...</span></div>
   </div>
   <div class="api-bar load" id="apiBar1"><span id="apiTxt1">⏳ Проверяем сервер...</span></div>
+
+  <!-- ══ БЕГУЩАЯ СТРОКА — ПОСЛЕДНИЕ ПОКУПКИ ══ -->
+  <div class="ticker-wrap" id="tickerWrap">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+
   <div class="cnt">
     <div class="spin-wrap" id="shopSpin"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
     <div style="display:none" id="shopContent">
@@ -298,9 +242,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══════════════════════════
-     ЭКРАН 2: КОРЗИНА
-══════════════════════════ -->
+<!-- ══ ЭКРАН 2: КОРЗИНА ══ -->
 <div class="screen" id="sCart">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -330,9 +272,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══════════════════════════
-     ЭКРАН 3: ОПЛАТА
-══════════════════════════ -->
+<!-- ══ ЭКРАН 3: ОПЛАТА ══ -->
 <div class="screen" id="sPay">
   <div class="pay-screen">
     <div class="pay-ico">🎉</div>
@@ -342,21 +282,16 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
       Нажми на неё — откроется страница оплаты.<br><br>
       После оплаты ключи придут <b>автоматически</b> 🔑
     </div>
-
-    <!-- Ссылка как fallback -->
     <div class="pay-link-box">
       <span>Или нажми ссылку прямо здесь:</span>
       <a id="payLink" href="#" target="_blank">Загрузка...</a>
     </div>
-
     <button class="btn" id="copyPayBtn" style="margin-bottom:10px">📋 СКОПИРОВАТЬ ССЫЛКУ</button>
     <button class="btn secondary" onclick="goTo('sShop');clearCart()">🛍 В магазин</button>
   </div>
 </div>
 
-<!-- ══════════════════════════
-     ЭКРАН 4: ПРОФИЛЬ
-══════════════════════════ -->
+<!-- ══ ЭКРАН 4: ПРОФИЛЬ ══ -->
 <div class="screen" id="sProfile">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -384,9 +319,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══════════════════════════
-     ЭКРАН 5: ИСТОРИЯ
-══════════════════════════ -->
+<!-- ══ ЭКРАН 5: ИСТОРИЯ ══ -->
 <div class="screen" id="sHistory">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -422,7 +355,6 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </button>
 </nav>
 
-<!-- OVERLAY & TOAST -->
 <div class="overlay" id="overlay">
   <div class="spinner"></div>
   <div class="ov-txt" id="ovTxt">Создаём заказ...</div>
@@ -433,7 +365,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 // ══════════════════════════════
 //  ⚙️ КОНФИГ
 // ══════════════════════════════
-const API = "https://klukvadlc.ddns.net";
+const API      = "https://klukvadlc.ddns.net";
+const CART_KEY = "klukvadlc_cart_v1"; // ключ в localStorage
 
 // ── Telegram WebApp ──
 const tg = window.Telegram?.WebApp ?? {
@@ -446,7 +379,7 @@ const tg = window.Telegram?.WebApp ?? {
 tg.ready(); tg.expand();
 try{tg.setHeaderColor('#0e0e10');tg.setBackgroundColor('#0e0e10')}catch{}
 
-const urlP      = new URLSearchParams(window.location.search);
+const urlP       = new URLSearchParams(window.location.search);
 const PARAM_UID  = parseInt(urlP.get('uid'))||0;
 const PARAM_DAYS = parseInt(urlP.get('days'))||0;
 const UID   = tg.initDataUnsafe?.user?.id || PARAM_UID || 0;
@@ -455,10 +388,32 @@ const IDATA = tg.initData || '';
 
 document.getElementById('uname1').textContent = UNAME;
 
+// ══════════════════════════════
+//  🛒 КОРЗИНА — localStorage
+//  Загружаем при старте, сохраняем при каждом изменении
+// ══════════════════════════════
+let cart = (()=>{
+  try{
+    const raw = localStorage.getItem(CART_KEY);
+    if(!raw) return {};
+    const parsed = JSON.parse(raw);
+    // Валидируем: только числа > 0
+    const clean = {};
+    for(const [k,v] of Object.entries(parsed)){
+      const d = parseInt(k), q = parseInt(v);
+      if(!isNaN(d) && !isNaN(q) && q > 0) clean[d] = q;
+    }
+    return clean;
+  }catch{ return {}; }
+})();
+
+function saveCart(){
+  try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch{}
+}
+
 // ── Состояние ──
 let plans  = [];
 let apiOk  = false;
-let cart   = {}; // { days: qty }
 let lastPayUrl = '';
 
 // ── Helpers ──
@@ -468,12 +423,12 @@ const show = (id,d='block') => g(id) && (g(id).style.display=d);
 
 // ── Навигация ──
 let curScreen = 'sShop';
-function goTo(id) {
+function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g(id)?.classList.add('active');
   g('nb-'+id)?.classList.add('active');
-  curScreen = id;
+  curScreen=id;
   window.scrollTo(0,0);
   tg.HapticFeedback.impactOccurred?.('light');
   if(id==='sProfile') loadProfile();
@@ -491,12 +446,10 @@ async function apiFetch(path,opts={},ms=9000){
 
 function setApiOk(ok,msg=''){
   apiOk=ok;
-  ['1'].forEach(n=>{
-    const bar=g('apiBar'+n),txt=g('apiTxt'+n),dot=g('dot'+n);
-    if(bar) bar.className='api-bar '+(ok?'ok':msg?'fail':'load');
-    if(txt) txt.textContent=ok?'✅ Сервер доступен':`❌ ${msg||'Нет соединения'}`;
-    if(dot) dot.className='dot '+(ok?'g':msg?'r':'gr');
-  });
+  const bar=g('apiBar1'),txt=g('apiTxt1'),dot=g('dot1');
+  if(bar) bar.className='api-bar '+(ok?'ok':msg?'fail':'load');
+  if(txt) txt.textContent=ok?'✅ Сервер доступен':`❌ ${msg||'Нет соединения'}`;
+  if(dot) dot.className='dot '+(ok?'g':msg?'r':'gr');
 }
 
 let _tt=null;
@@ -506,6 +459,59 @@ function toast(msg,ms=3200){
 }
 function overlay(on,txt='Создаём заказ...'){
   g('ovTxt').textContent=txt;g('overlay').classList.toggle('on',on);
+}
+
+// ══════════════════════════════
+//  🔥 ТИКЕР ПОСЛЕДНИХ ПОКУПОК
+//  Плавная прокрутка справа налево
+// ══════════════════════════════
+function escHtml(s){
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function loadRecentPurchases(){
+  try{
+    const r = await apiFetch('/miniapp/recent_purchases', {}, 7000);
+    if(!r.ok) return;
+    const list = await r.json();
+    if(!Array.isArray(list) || !list.length) return;
+
+    const inner = g('tickerInner');
+    if(!inner) return;
+
+    // Собираем HTML для каждого элемента
+    const makeItem = p => {
+      const who = p.username ? '@'+escHtml(p.username) : escHtml(p.name||'Аноним');
+      return `<span class="ticker-item">
+        <span class="ti-ico">🛍</span>
+        <span class="ti-name">${who}</span>
+        <span class="ti-sep">·</span>
+        <span class="ti-plan">${escHtml(p.label)}</span>
+        <span class="ti-sep">·</span>
+        <span class="ti-price">${Math.round(p.rub)} ₽</span>
+      </span>`;
+    };
+
+    const html = list.map(makeItem).join('');
+    // Дублируем контент — тогда при translateX(-50%) анимация бесшовна
+    inner.innerHTML = html + html;
+
+    // Скорость: ~60px/с, минимум 18с
+    const duration = Math.max(18, list.length * 3.8);
+    inner.style.animationDuration = duration + 's';
+
+    // Показываем тикер
+    g('tickerWrap').classList.add('visible');
+
+    // Пауза при наведении (удобно на десктопе)
+    g('tickerWrap').addEventListener('mouseenter',()=>{ inner.style.animationPlayState='paused'; });
+    g('tickerWrap').addEventListener('mouseleave',()=>{ inner.style.animationPlayState='running'; });
+
+  }catch(e){
+    // Тихо пропускаем — тикер просто не покажется
+  }
 }
 
 // ══════════════════════════════
@@ -534,7 +540,11 @@ async function loadShop(){
     if(PARAM_DAYS&&plans.find(p=>p.days===PARAM_DAYS&&p.stock>0)){
       addToCart(PARAM_DAYS,1);
     }
+    // Загружаем тикер последних покупок
+    loadRecentPurchases();
   }
+  // Всегда восстанавливаем значок корзины из localStorage
+  updateCartBadge();
 }
 
 function renderPlans(){
@@ -581,9 +591,9 @@ function changeQty(days,delta,e){
   const next=Math.max(0,Math.min(cur+delta,p.stock,10));
   if(next===0) delete cart[days];
   else cart[days]=next;
+  saveCart(); // ← СОХРАНЯЕМ В localStorage
   tg.HapticFeedback.selectionChanged?.();
   updateCartBadge();
-  // Обновляем только этот план
   const qv=g('qv-'+days);
   const pl=g('plan-'+days);
   if(qv)qv.textContent=next;
@@ -599,6 +609,7 @@ function addToCart(days,qty){
   if(!p||p.stock<=0)return;
   cart[days]=(cart[days]||0)+qty;
   if(cart[days]>p.stock)cart[days]=p.stock;
+  saveCart(); // ← СОХРАНЯЕМ В localStorage
   updateCartBadge();
 }
 
@@ -642,6 +653,7 @@ function renderCart(){
 
 function removeFromCart(days){
   delete cart[days];
+  saveCart(); // ← СОХРАНЯЕМ В localStorage
   updateCartBadge();
   renderCart();
   renderPlans();
@@ -650,6 +662,7 @@ function removeFromCart(days){
 
 function clearCart(){
   cart={};
+  saveCart(); // ← СОХРАНЯЕМ В localStorage
   updateCartBadge();
 }
 
@@ -662,8 +675,6 @@ async function checkout(){
   if(!apiOk){toast('❌ Сервер недоступен');return}
   if(!UID){toast('⚠ Открой магазин через Telegram бота');return}
 
-  // Берём первый товар (одна транзакция — один тариф)
-  // Если несколько тарифов — создаём несколько заказов
   tg.HapticFeedback.impactOccurred?.('medium');
   overlay(true,'Создаём заказ...');
   g('payBtn').disabled=true;
@@ -679,14 +690,9 @@ async function checkout(){
         body:JSON.stringify({days:+days,uid:UID,qty})
       },15000);
       const d=await r.json();
-      if(r.ok&&d.pay_url){
-        payUrl=d.pay_url; // берём последний (или первый)
-      }else{
-        errors.push(d.error||`Ошибка ${r.status}`);
-      }
-    }catch(e){
-      errors.push(e.name==='AbortError'?'таймаут':e.message);
-    }
+      if(r.ok&&d.pay_url){payUrl=d.pay_url;}
+      else{errors.push(d.error||`Ошибка ${r.status}`);}
+    }catch(e){errors.push(e.name==='AbortError'?'таймаут':e.message);}
   }
 
   overlay(false);
@@ -697,15 +703,13 @@ async function checkout(){
     return;
   }
 
-  // Сохраняем ссылку и показываем экран оплаты
   lastPayUrl=payUrl;
   g('payLink').href=payUrl;
   g('payLink').textContent=payUrl.length>50?payUrl.slice(0,50)+'...':payUrl;
 
   g('copyPayBtn').onclick=async()=>{
-    try{
-      await navigator.clipboard.writeText(payUrl);
-    }catch{
+    try{await navigator.clipboard.writeText(payUrl);}
+    catch{
       const ta=document.createElement('textarea');
       ta.value=payUrl;ta.style.cssText='position:fixed;opacity:0';
       document.body.appendChild(ta);ta.select();
@@ -719,7 +723,6 @@ async function checkout(){
   clearCart();
   renderPlans();
 
-  // Переходим на экран оплаты (без nav bar)
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g('sPay').classList.add('active');
@@ -748,7 +751,6 @@ async function loadProfile(){
       g('statActive').textContent=d.active||0;
       g('statKeys').textContent=d.total_keys||0;
       g('statSpent').textContent=Math.round(d.spent||0);
-      // Активные ключи
       if(d.active_keys&&d.active_keys.length){
         show('activeKeysWrap');
         const list=g('activeKeysList');list.innerHTML='';
@@ -767,14 +769,10 @@ async function loadProfile(){
             </div>`;
           list.appendChild(el);
         });
-      }else{
-        hide('activeKeysWrap');
-      }
+      }else{hide('activeKeysWrap');}
       hide('profileSpin');show('profileContent');
       profileLoaded=true;
-    }else{
-      throw new Error(`HTTP ${r.status}`);
-    }
+    }else{throw new Error(`HTTP ${r.status}`);}
   }catch(e){
     g('profileSpin').innerHTML=`<div class="empty"><div class="e-ico">❌</div><div class="e-ttl">Ошибка загрузки</div><div class="e-sub">${e.message}</div><button class="btn" style="margin-top:16px;max-width:200px" onclick="profileLoaded=false;loadProfile()">🔄 Повторить</button></div>`;
     show('profileSpin');
@@ -832,7 +830,7 @@ async function loadHistory(){
         list.appendChild(el);
       });
       histLoaded=true;
-    }else{throw new Error(`HTTP ${r.status}`)}
+    }else{throw new Error(`HTTP ${r.status}`);}
   }catch(e){
     g('histSpin').innerHTML=`<div class="empty"><div class="e-ico">❌</div><div class="e-ttl">Ошибка</div><div class="e-sub">${e.message}</div><button class="btn" style="margin-top:16px;max-width:200px" onclick="histLoaded=false;loadHistory()">🔄 Повторить</button></div>`;
     show('histSpin');
