@@ -7,92 +7,61 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:    #0e0e10;
-  --surf:  #18181b;
-  --surf2: #222226;
-  --brd:   #2e2e33;
-  --acc:   #e63946;
-  --acc2:  rgba(230,57,70,.13);
-  --gold:  #f4c430;
-  --green: #30d158;
-  --txt:   #f2f2f7;
-  --muted: #8e8e93;
-  --r:     16px;
-  --nav:   64px;
+:root{
+  --bg:#0e0e10;--surf:#18181b;--surf2:#222226;--brd:#2e2e33;
+  --acc:#e63946;--acc2:rgba(230,57,70,.13);--gold:#f4c430;
+  --green:#30d158;--txt:#f2f2f7;--muted:#8e8e93;--r:16px;--nav:64px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* ── SCREENS ── */
-.screen{display:none;flex-direction:column;min-height:100vh;padding-bottom:var(--nav)}
-.screen.active{display:flex;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ══ CANVAS BG ══ */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 
-/* ── BOTTOM NAV ── */
-.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--muted);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;position:relative;transition:color .15s;letter-spacing:.3px;}
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;min-height:100vh;padding-bottom:var(--nav);position:relative;z-index:1}
+.screen.active{display:flex;animation:fadeIn .22s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(18,18,20,.94);backdrop-filter:blur(16px);border-top:1px solid var(--brd);display:flex;z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--muted);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;position:relative;transition:color .15s;letter-spacing:.3px}
 .nav-btn.active{color:var(--acc)}
 .nav-btn .ico{font-size:20px;line-height:1}
-.badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--acc);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;padding:0 4px;display:none;align-items:center;justify-content:center;}
+.badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--acc);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;padding:0 4px;display:none;align-items:center;justify-content:center}
 .badge.on{display:flex}
 
 /* ── HEADER ── */
-.hdr{padding:18px 18px 14px;flex-shrink:0;background:linear-gradient(150deg,#1a0505 0%,var(--bg) 60%);border-bottom:1px solid var(--brd);position:relative;overflow:hidden;}
-.hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.08) 0%,transparent 70%);pointer-events:none;}
+.hdr{padding:18px 18px 14px;flex-shrink:0;background:linear-gradient(150deg,rgba(26,5,5,.96) 0%,rgba(14,14,16,.88) 60%);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.1) 0%,transparent 70%);pointer-events:none}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;line-height:1}
 .logo em{color:var(--acc);font-style:normal}
 .logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-.user-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--brd);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);margin-top:8px;}
+.user-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,34,38,.8);border:1px solid var(--brd);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);margin-top:8px}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s}
-.dot.g{background:var(--green);box-shadow:0 0 5px var(--green)}
-.dot.r{background:var(--acc)}
-.dot.y{background:var(--gold)}
+.dot.g{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot.r{background:var(--acc);box-shadow:0 0 6px var(--acc)}
 .dot.gr{background:var(--muted)}
 
 /* ── API BAR ── */
-.api-bar{padding:5px 18px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--brd);transition:all .3s;}
+.api-bar{padding:5px 18px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--brd);backdrop-filter:blur(8px);transition:all .3s}
 .api-bar.ok{color:var(--green);background:rgba(48,209,88,.05)}
 .api-bar.fail{color:var(--acc);background:rgba(230,57,70,.06)}
 .api-bar.load{color:var(--muted)}
 
-/* ══ TICKER — ПОСЛЕДНИЕ ПОКУПКИ ══ */
-.ticker-wrap{
-  overflow:hidden;
-  background:linear-gradient(90deg,rgba(230,57,70,.04) 0%,rgba(230,57,70,.10) 50%,rgba(230,57,70,.04) 100%);
-  border-bottom:1px solid rgba(230,57,70,.20);
-  padding:8px 0;
-  flex-shrink:0;
-  display:none;
-  position:relative;
-}
+/* ══ TICKER ══ */
+.ticker-wrap{overflow:hidden;background:linear-gradient(90deg,rgba(230,57,70,.03),rgba(230,57,70,.09),rgba(230,57,70,.03));border-bottom:1px solid rgba(230,57,70,.18);padding:7px 0;flex-shrink:0;display:none;position:relative}
 .ticker-wrap.visible{display:block}
-/* Градиентные маски по краям */
-.ticker-wrap::before,.ticker-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none;
-}
+.ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none}
 .ticker-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
 .ticker-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
-.ticker-inner{
-  display:inline-flex;
-  white-space:nowrap;
-  animation:ticker-rtl 30s linear infinite;
-  will-change:transform;
-}
-@keyframes ticker-rtl{
-  0%  {transform:translateX(0)}
-  100%{transform:translateX(-50%)}
-}
-.ticker-item{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:11px;font-weight:700;padding:0 24px;
-  color:var(--muted);letter-spacing:.2px;
-}
-.ticker-item .ti-ico{font-size:13px;line-height:1}
+.ticker-inner{display:inline-flex;white-space:nowrap;animation:tkr 30s linear infinite;will-change:transform}
+@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:0 24px;color:var(--muted)}
 .ticker-item .ti-name{color:var(--acc)}
 .ticker-item .ti-plan{color:var(--txt)}
 .ticker-item .ti-price{color:var(--gold)}
-.ticker-item .ti-sep{color:var(--brd);margin:0 2px;opacity:.6}
+.ticker-item .ti-sep{color:var(--brd);margin:0 2px}
 
 /* ── CONTENT ── */
 .cnt{padding:16px;flex:1;max-width:480px;width:100%;margin:0 auto}
@@ -105,7 +74,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .spin-txt{font-size:12px;color:var(--muted)}
 
 /* ── PLAN CARD ── */
-.plan{background:var(--surf);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px 14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;transition:border-color .15s,background .15s;}
+.plan{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;transition:border-color .15s,background .15s,box-shadow .15s}
+.plan:not(.out):active{border-color:rgba(230,57,70,.5);box-shadow:0 0 20px rgba(230,57,70,.1)}
 .plan.out{opacity:.4}
 .plan.forever{border-color:rgba(244,196,48,.25)}
 .p-ico{width:42px;height:42px;border-radius:12px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -117,26 +87,28 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .p-stock.out{color:var(--acc)}
 .p-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
 .p-price{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1}
-.hot-badge{position:absolute;top:-1px;right:-1px;background:var(--gold);color:#1a1200;font-size:8px;font-weight:900;padding:3px 8px;border-radius:0 var(--r) 0 8px;text-transform:uppercase;letter-spacing:.5px;}
+.p-price-old{font-size:12px;color:var(--muted);text-decoration:line-through;font-weight:700;line-height:1}
+.disc-badge{background:var(--green);color:#0a2e14;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px;letter-spacing:.3px;white-space:nowrap}
+.hot-badge{position:absolute;top:-1px;right:-1px;background:var(--gold);color:#1a1200;font-size:8px;font-weight:900;padding:3px 8px;border-radius:0 var(--r) 0 8px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ── QTY CONTROL ── */
-.qty{display:flex;align-items:center;gap:0;background:var(--surf2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
-.qty-btn{width:32px;height:32px;border:none;background:none;color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s;}
+/* ── QTY ── */
+.qty{display:flex;align-items:center;background:var(--surf2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
+.qty-btn{width:32px;height:32px;border:none;background:none;color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
 .qty-btn:active{background:var(--brd)}
 .qty-btn:disabled{color:var(--muted);cursor:not-allowed}
 .qty-val{min-width:28px;text-align:center;font-size:14px;font-weight:800}
 .in-cart{border-color:var(--acc)!important;background:var(--acc2)!important}
 
 /* ── CART ── */
-.cart-item{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.cart-item{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .ci-info{flex:1;min-width:0}
 .ci-name{font-size:14px;font-weight:800}
 .ci-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .ci-price{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);flex-shrink:0}
-.ci-del{width:32px;height:32px;border:none;background:rgba(230,57,70,.12);border-radius:8px;color:var(--acc);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci-del{width:32px;height:32px;border:none;background:rgba(230,57,70,.12);border-radius:8px;color:var(--acc);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-/* ── TOTAL BLOCK ── */
-.total-block{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;margin:12px 0 14px;}
+/* ── TOTAL ── */
+.total-block{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;margin:12px 0 14px}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
 .total-row+.total-row{border-top:1px solid var(--brd);padding-top:10px;margin-top:6px}
 .tl{font-size:12px;color:var(--muted)}
@@ -145,11 +117,11 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .total-row.big .tv{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--acc);letter-spacing:1px}
 
 /* ── BUTTONS ── */
-.btn{width:100%;padding:16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:opacity .15s,transform .1s;position:relative;overflow:hidden;}
+.btn{width:100%;padding:16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:opacity .15s,transform .1s;position:relative;overflow:hidden}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
-.btn.secondary{background:var(--surf2);border:1.5px solid var(--brd);color:var(--txt);font-size:15px;letter-spacing:1px}
+.btn.secondary{background:rgba(34,34,38,.9);border:1.5px solid var(--brd);color:var(--txt);font-size:15px;letter-spacing:1px}
 
 /* ── EMPTY ── */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
@@ -158,30 +130,30 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .empty .e-sub{font-size:13px;line-height:1.6}
 
 /* ── PAY SCREEN ── */
-.pay-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;}
+.pay-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center}
 .pay-ico{font-size:60px;margin-bottom:16px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
 .pay-ttl{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:10px}
 .pay-msg{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px}
-.pay-link-box{width:100%;background:var(--surf2);border:1.5px solid var(--brd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--muted);word-break:break-all;text-align:left;}
-.pay-link-box span{display:block;font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.pay-link-box{width:100%;background:rgba(34,34,38,.9);border:1.5px solid var(--brd);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:11px;color:var(--muted);word-break:break-all;text-align:left}
+.pay-link-box span{display:block;font-size:10px;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
 .pay-link-box a{color:var(--acc);text-decoration:none;font-size:12px}
 
 /* ── PROFILE ── */
-.profile-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:12px;}
-.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--acc2);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;}
+.profile-card{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:12px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--acc2);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px}
 .profile-name{font-size:18px;font-weight:800;text-align:center}
 .profile-id{font-size:12px;color:var(--muted);text-align:center;margin-top:4px}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-.stat{background:var(--surf2);border:1px solid var(--brd);border-radius:10px;padding:12px;text-align:center;}
+.stat{background:var(--surf2);border:1px solid var(--brd);border-radius:10px;padding:12px;text-align:center}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--acc)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700}
-.key-card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px;}
+.key-card{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px}
 .key-val{font-family:monospace;font-size:13px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:8px 10px;margin-top:8px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .copy-btn{font-size:14px;cursor:pointer;flex-shrink:0;background:none;border:none;color:var(--muted);padding:0}
 
 /* ── HISTORY ── */
-.hist-item{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px;}
+.hist-item{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px}
 .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .hist-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
 .hist-status.paid{color:var(--green);background:rgba(48,209,88,.12)}
@@ -192,17 +164,17 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .hist-key{font-family:monospace;font-size:11px;background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:6px 8px;margin-top:8px;word-break:break-all}
 
 /* ── ERR BLOCK ── */
-.err-block{background:var(--acc2);border:1.5px solid rgba(230,57,70,.3);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px;display:none;}
+.err-block{background:var(--acc2);border:1.5px solid rgba(230,57,70,.3);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px;display:none}
 .err-block.on{display:block}
 .err-block .eb-ico{font-size:36px;margin-bottom:10px}
 .err-block .eb-ttl{font-size:16px;font-weight:800;margin-bottom:6px}
 .err-block .eb-msg{font-size:12px;color:var(--muted);line-height:1.6}
 
 /* ── OVERLAY & TOAST ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .overlay.on{display:flex}
 .ov-txt{color:var(--muted);font-size:13px}
-.toast{position:fixed;bottom:calc(var(--nav) + 12px);left:50%;transform:translateX(-50%) translateY(60px);background:#2c2c2e;color:var(--txt);padding:10px 20px;border-radius:22px;font-size:13px;z-index:1000;border:1px solid var(--brd);max-width:88vw;text-align:center;white-space:pre-line;transition:transform .28s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast{position:fixed;bottom:calc(var(--nav)+12px);left:50%;transform:translateX(-50%) translateY(60px);background:#2c2c2e;color:var(--txt);padding:10px 20px;border-radius:22px;font-size:13px;z-index:1000;border:1px solid var(--brd);max-width:88vw;text-align:center;white-space:pre-line;transition:transform .28s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
 .toast.on{transform:translateX(-50%) translateY(0)}
 .infos{display:flex;flex-direction:column;gap:7px;margin-top:14px}
 .info-row{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.025);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.5}
@@ -211,7 +183,10 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 </head>
 <body>
 
-<!-- ══ ЭКРАН 1: МАГАЗИН ══ -->
+<!-- ══ CANVAS: МЕРЦАЮЩИЕ ТОЧКИ-СОЗВЕЗДИЯ ══ -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ══ МАГАЗИН ══ -->
 <div class="screen active" id="sShop">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -219,12 +194,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
     <div class="user-pill"><span class="dot gr" id="dot1"></span><span id="uname1">Загрузка...</span></div>
   </div>
   <div class="api-bar load" id="apiBar1"><span id="apiTxt1">⏳ Проверяем сервер...</span></div>
-
-  <!-- ══ БЕГУЩАЯ СТРОКА — ПОСЛЕДНИЕ ПОКУПКИ ══ -->
-  <div class="ticker-wrap" id="tickerWrap">
-    <div class="ticker-inner" id="tickerInner"></div>
-  </div>
-
+  <div class="ticker-wrap" id="tickerWrap"><div class="ticker-inner" id="tickerInner"></div></div>
   <div class="cnt">
     <div class="spin-wrap" id="shopSpin"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
     <div style="display:none" id="shopContent">
@@ -242,7 +212,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══ ЭКРАН 2: КОРЗИНА ══ -->
+<!-- ══ КОРЗИНА ══ -->
 <div class="screen" id="sCart">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -272,7 +242,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══ ЭКРАН 3: ОПЛАТА ══ -->
+<!-- ══ ЭКРАН ОПЛАТЫ ══ -->
 <div class="screen" id="sPay">
   <div class="pay-screen">
     <div class="pay-ico">🎉</div>
@@ -291,7 +261,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══ ЭКРАН 4: ПРОФИЛЬ ══ -->
+<!-- ══ ПРОФИЛЬ ══ -->
 <div class="screen" id="sProfile">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -319,7 +289,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ══ ЭКРАН 5: ИСТОРИЯ ══ -->
+<!-- ══ ИСТОРИЯ ══ -->
 <div class="screen" id="sHistory">
   <div class="hdr">
     <div class="logo">Klukva<em>DLC</em></div>
@@ -338,37 +308,135 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ── BOTTOM NAV ── -->
+<!-- ── NAV ── -->
 <nav class="nav">
-  <button class="nav-btn active" id="nb-sShop" onclick="goTo('sShop')">
-    <div class="ico">🛍</div>Магазин
-  </button>
-  <button class="nav-btn" id="nb-sCart" onclick="goTo('sCart')">
-    <div class="ico">🛒</div>Корзина
-    <div class="badge" id="cartBadge">0</div>
-  </button>
-  <button class="nav-btn" id="nb-sProfile" onclick="goTo('sProfile')">
-    <div class="ico">👤</div>Профиль
-  </button>
-  <button class="nav-btn" id="nb-sHistory" onclick="goTo('sHistory')">
-    <div class="ico">📜</div>История
-  </button>
+  <button class="nav-btn active" id="nb-sShop" onclick="goTo('sShop')"><div class="ico">🛍</div>Магазин</button>
+  <button class="nav-btn" id="nb-sCart" onclick="goTo('sCart')"><div class="ico">🛒</div>Корзина<div class="badge" id="cartBadge">0</div></button>
+  <button class="nav-btn" id="nb-sProfile" onclick="goTo('sProfile')"><div class="ico">👤</div>Профиль</button>
+  <button class="nav-btn" id="nb-sHistory" onclick="goTo('sHistory')"><div class="ico">📜</div>История</button>
 </nav>
 
-<div class="overlay" id="overlay">
-  <div class="spinner"></div>
-  <div class="ov-txt" id="ovTxt">Создаём заказ...</div>
-</div>
+<div class="overlay" id="overlay"><div class="spinner"></div><div class="ov-txt" id="ovTxt">Создаём заказ...</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════
-//  ⚙️ КОНФИГ
-// ══════════════════════════════
-const API      = "https://klukvadlc.ddns.net";
-const CART_KEY = "klukvadlc_cart_v1"; // ключ в localStorage
+// ════════════════════════════════════════
+//  ✨ АНИМАЦИЯ ТОЧЕК-СОЗВЕЗДИЙ
+//  Цвета подобраны под тёмно-красный фон
+// ════════════════════════════════════════
+(function(){
+  const cv  = document.getElementById('bgCanvas');
+  const ctx = cv.getContext('2d');
 
-// ── Telegram WebApp ──
+  // Палитра: красные, бордовые + редкие светлые для контраста
+  const PAL = [
+    [230, 57,  70],   // #e63946  — основной красный
+    [180, 28,  42],   // тёмно-красный
+    [255, 90, 100],   // светло-красный
+    [200, 40,  55],   // средний красный
+    [242,242, 247],   // почти белый (редкие яркие точки)
+    [140, 18,  32],   // бордо
+  ];
+
+  let W, H, dots;
+
+  function resize(){
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+  }
+
+  function rand(a,b){ return a + Math.random()*(b-a); }
+
+  function mkDot(){
+    const [r,g,b] = PAL[Math.floor(Math.random()*PAL.length)];
+    // белые/светлые точки — маленькие, ярче; красные — крупнее, тусклее
+    const isLight = (r>200 && g>200);
+    return {
+      x: rand(0, W), y: rand(0, H),
+      vx: rand(-.35,.35), vy: rand(-.35,.35),
+      radius: isLight ? rand(2.5,4.5) : rand(4.0,7.0),
+      r, g, b,
+      phase: rand(0, Math.PI*2),
+      speed: rand(0.4, 1.1),   // скорость мерцания
+      baseA: isLight ? rand(.8,1.0) : rand(.6,.9),
+    };
+  }
+
+  function init(){
+    resize();
+    const n = Math.min(100, Math.floor(W*H/8500));
+    dots = Array.from({length:n}, mkDot);
+  }
+
+  const LINK = 120;   // макс. дистанция для линий
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    const t = performance.now()/1000;
+
+    // Обновляем позиции
+    for(const d of dots){
+      d.x += d.vx; d.y += d.vy;
+      if(d.x<-5) d.x=W+5;  else if(d.x>W+5) d.x=-5;
+      if(d.y<-5) d.y=H+5;  else if(d.y>H+5) d.y=-5;
+    }
+
+    // Линии между близкими точками
+    for(let i=0;i<dots.length;i++){
+      const a = dots[i];
+      for(let j=i+1;j<dots.length;j++){
+        const b  = dots[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist >= LINK) continue;
+        const alpha = (1-dist/LINK)*0.14;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        // Цвет линии = усреднённый цвет двух точек
+        const lr = Math.round((a.r+b.r)/2);
+        const lg = Math.round((a.g+b.g)/2);
+        const lb = Math.round((a.b+b.b)/2);
+        ctx.strokeStyle = `rgba(${lr},${lg},${lb},${alpha})`;
+        ctx.lineWidth   = 0.55;
+        ctx.stroke();
+      }
+    }
+
+    // Точки с мерцанием
+    for(const d of dots){
+      const alpha = d.baseA*(0.55 + 0.45*Math.sin(t*d.speed + d.phase));
+
+      // Внешнее свечение
+      const grd = ctx.createRadialGradient(d.x,d.y,0, d.x,d.y, d.radius*4.5);
+      grd.addColorStop(0, `rgba(${d.r},${d.g},${d.b},${alpha*0.5})`);
+      grd.addColorStop(1, `rgba(${d.r},${d.g},${d.b},0)`);
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius*4.5, 0, Math.PI*2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Ядро
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${d.r},${d.g},${d.b},${alpha})`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', ()=>{ resize(); });
+  init();
+  frame();
+})();
+
+// ════════════════════════════════
+//  ⚙️ КОНФИГ
+// ════════════════════════════════
+const API      = "https://klukvadlc.ddns.net";
+const CART_KEY = "klukvadlc_cart_v1";
+
 const tg = window.Telegram?.WebApp ?? {
   ready:()=>{},expand:()=>{},
   openLink:url=>window.open(url,'_blank'),
@@ -388,55 +456,39 @@ const IDATA = tg.initData || '';
 
 document.getElementById('uname1').textContent = UNAME;
 
-// ══════════════════════════════
-//  🛒 КОРЗИНА — localStorage
-//  Загружаем при старте, сохраняем при каждом изменении
-// ══════════════════════════════
+// ══ КОРЗИНА — localStorage ══
 let cart = (()=>{
   try{
     const raw = localStorage.getItem(CART_KEY);
     if(!raw) return {};
-    const parsed = JSON.parse(raw);
-    // Валидируем: только числа > 0
-    const clean = {};
-    for(const [k,v] of Object.entries(parsed)){
-      const d = parseInt(k), q = parseInt(v);
-      if(!isNaN(d) && !isNaN(q) && q > 0) clean[d] = q;
+    const p = JSON.parse(raw), c={};
+    for(const [k,v] of Object.entries(p)){
+      const d=parseInt(k), q=parseInt(v);
+      if(!isNaN(d)&&!isNaN(q)&&q>0) c[d]=q;
     }
-    return clean;
-  }catch{ return {}; }
+    return c;
+  }catch{return{};}
 })();
+function saveCart(){ try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch{} }
 
-function saveCart(){
-  try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }catch{}
-}
+let plans=[], apiOk=false, lastPayUrl='';
+const g    = id=>document.getElementById(id);
+const hide = id=>g(id)&&(g(id).style.display='none');
+const show = (id,d='block')=>g(id)&&(g(id).style.display=d);
 
-// ── Состояние ──
-let plans  = [];
-let apiOk  = false;
-let lastPayUrl = '';
-
-// ── Helpers ──
-const g    = id => document.getElementById(id);
-const hide = id => g(id) && (g(id).style.display='none');
-const show = (id,d='block') => g(id) && (g(id).style.display=d);
-
-// ── Навигация ──
-let curScreen = 'sShop';
+let curScreen='sShop';
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g(id)?.classList.add('active');
   g('nb-'+id)?.classList.add('active');
-  curScreen=id;
-  window.scrollTo(0,0);
+  curScreen=id; window.scrollTo(0,0);
   tg.HapticFeedback.impactOccurred?.('light');
   if(id==='sProfile') loadProfile();
   if(id==='sHistory') loadHistory();
   if(id==='sCart')    renderCart();
 }
 
-// ── API ──
 async function apiFetch(path,opts={},ms=9000){
   const ctrl=new AbortController();
   const tid=setTimeout(()=>ctrl.abort(),ms);
@@ -461,91 +513,46 @@ function overlay(on,txt='Создаём заказ...'){
   g('ovTxt').textContent=txt;g('overlay').classList.toggle('on',on);
 }
 
-// ══════════════════════════════
-//  🔥 ТИКЕР ПОСЛЕДНИХ ПОКУПОК
-//  Плавная прокрутка справа налево
-// ══════════════════════════════
-function escHtml(s){
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+// ══ ТИКЕР ══
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 async function loadRecentPurchases(){
   try{
-    const r = await apiFetch('/miniapp/recent_purchases', {}, 7000);
-    if(!r.ok) return;
-    const list = await r.json();
-    if(!Array.isArray(list) || !list.length) return;
-
-    const inner = g('tickerInner');
-    if(!inner) return;
-
-    // Собираем HTML для каждого элемента
-    const makeItem = p => {
-      const who = p.username ? '@'+escHtml(p.username) : escHtml(p.name||'Аноним');
-      return `<span class="ticker-item">
-        <span class="ti-ico">🛍</span>
-        <span class="ti-name">${who}</span>
-        <span class="ti-sep">·</span>
-        <span class="ti-plan">${escHtml(p.label)}</span>
-        <span class="ti-sep">·</span>
-        <span class="ti-price">${Math.round(p.rub)} ₽</span>
-      </span>`;
-    };
-
-    const html = list.map(makeItem).join('');
-    // Дублируем контент — тогда при translateX(-50%) анимация бесшовна
-    inner.innerHTML = html + html;
-
-    // Скорость: ~60px/с, минимум 18с
-    const duration = Math.max(18, list.length * 3.8);
-    inner.style.animationDuration = duration + 's';
-
-    // Показываем тикер
+    const r=await apiFetch('/miniapp/recent_purchases',{},7000);
+    if(!r.ok)return;
+    const list=await r.json();
+    if(!Array.isArray(list)||!list.length)return;
+    const inner=g('tickerInner');if(!inner)return;
+    const html=list.map(p=>`<span class="ticker-item"><span>🛍</span><span class="ti-name">${p.username?'@'+esc(p.username):esc(p.name||'Аноним')}</span><span class="ti-sep">·</span><span class="ti-plan">${esc(p.label)}</span><span class="ti-sep">·</span><span class="ti-price">${Math.round(p.rub)} ₽</span></span>`).join('');
+    inner.innerHTML=html+html;
+    inner.style.animationDuration=Math.max(18,list.length*3.8)+'s';
     g('tickerWrap').classList.add('visible');
-
-    // Пауза при наведении (удобно на десктопе)
-    g('tickerWrap').addEventListener('mouseenter',()=>{ inner.style.animationPlayState='paused'; });
-    g('tickerWrap').addEventListener('mouseleave',()=>{ inner.style.animationPlayState='running'; });
-
-  }catch(e){
-    // Тихо пропускаем — тикер просто не покажется
-  }
+    g('tickerWrap').addEventListener('mouseenter',()=>{inner.style.animationPlayState='paused';});
+    g('tickerWrap').addEventListener('mouseleave',()=>{inner.style.animationPlayState='running';});
+  }catch{}
 }
 
-// ══════════════════════════════
-//  МАГАЗИН
-// ══════════════════════════════
+// ══ МАГАЗИН ══
 async function loadShop(){
-  hide('shopContent');show('shopSpin');
-  setApiOk(false);
+  hide('shopContent');show('shopSpin');setApiOk(false);
   try{
     const r=await apiFetch('/miniapp/plans');
-    if(r.ok){
-      const d=await r.json();
-      if(Array.isArray(d)&&d.length){plans=d;setApiOk(true)}
-      else setApiOk(false,'пустой ответ');
-    }else setApiOk(false,`HTTP ${r.status}`);
-  }catch(e){setApiOk(false,e.name==='AbortError'?'таймаут':(e.message||'нет соединения'))}
+    if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length){plans=d;setApiOk(true);}else setApiOk(false,'пустой ответ');}
+    else setApiOk(false,`HTTP ${r.status}`);
+  }catch(e){setApiOk(false,e.name==='AbortError'?'таймаут':(e.message||'нет соединения'));}
   hide('shopSpin');show('shopContent');
   if(!apiOk){
     g('shopErrMsg').textContent=`Не удалось загрузить тарифы.\n${API}`;
-    g('shopErr').classList.add('on');
-    hide('planListWrap');
+    g('shopErr').classList.add('on');hide('planListWrap');
   }else{
-    g('shopErr').classList.remove('on');
-    show('planListWrap');
-    renderPlans();
-    if(PARAM_DAYS&&plans.find(p=>p.days===PARAM_DAYS&&p.stock>0)){
-      addToCart(PARAM_DAYS,1);
-    }
-    // Загружаем тикер последних покупок
+    g('shopErr').classList.remove('on');show('planListWrap');renderPlans();
+    if(PARAM_DAYS&&plans.find(p=>p.days===PARAM_DAYS&&p.stock>0)) addToCart(PARAM_DAYS,1);
     loadRecentPurchases();
   }
-  // Всегда восстанавливаем значок корзины из localStorage
   updateCartBadge();
 }
+
+// ══ ДЕФОЛТНЫЕ ЦЕНЫ (для расчёта скидки) ══
+const DEFAULT_PRICES = {1:150, 7:300, 30:450, 9999:750};
 
 function renderPlans(){
   const list=g('planList');list.innerHTML='';
@@ -555,10 +562,13 @@ function renderPlans(){
     const ico=forever?'♾️':p.days===1?'🔑':p.days===7?'🗝️':'🏆';
     const sCls=out?'out':p.stock<=5?'low':'ok';
     const sTxt=out?'✕ Закончились':p.stock<=5?`⚠ Осталось ${p.stock} шт.`:`✓ ${p.stock} шт.`;
-    const inCart=!!(cart[p.days]&&cart[p.days]>0);
-    const qty=cart[p.days]||0;
-    const wrap=document.createElement('div');
-    wrap.style.position='relative';
+    const inCart=!!(cart[p.days]&&cart[p.days]>0),qty=cart[p.days]||0;
+    const defPrice=DEFAULT_PRICES[p.days];
+    const disc=defPrice&&p.rub<defPrice?Math.round((1-p.rub/defPrice)*100):0;
+    const priceHtml=disc>0
+      ?`<div class="p-price-old">${defPrice} ₽</div><div class="p-price" style="color:var(--green)">${p.rub} ₽</div><div class="disc-badge">−${disc}%</div>`
+      :`<div class="p-price">${p.rub} ₽</div>`;
+    const wrap=document.createElement('div');wrap.style.position='relative';
     const el=document.createElement('div');
     el.className=`plan${forever?' forever':''}${out?' out':''}${inCart?' in-cart':''}`;
     el.id=`plan-${p.days}`;
@@ -571,116 +581,77 @@ function renderPlans(){
         <div style="font-size:10px;color:var(--muted);margin-top:2px">⭐ ${p.stars||0} Stars</div>
       </div>
       <div class="p-right">
-        <div class="p-price">${p.rub} ₽</div>
+        ${priceHtml}
         <div class="qty" id="qty-${p.days}">
           <button class="qty-btn" onclick="changeQty(${p.days},-1,event)" ${qty<=0?'disabled':''}>−</button>
           <div class="qty-val" id="qv-${p.days}">${qty}</div>
           <button class="qty-btn" onclick="changeQty(${p.days},1,event)" ${out?'disabled':''}>+</button>
         </div>
       </div>`;
-    wrap.appendChild(el);
-    list.appendChild(wrap);
+    wrap.appendChild(el);list.appendChild(wrap);
   });
 }
 
 function changeQty(days,delta,e){
   e?.stopPropagation();
-  const p=plans.find(x=>x.days===days);
-  if(!p)return;
-  const cur=cart[days]||0;
-  const next=Math.max(0,Math.min(cur+delta,p.stock,10));
-  if(next===0) delete cart[days];
-  else cart[days]=next;
-  saveCart(); // ← СОХРАНЯЕМ В localStorage
-  tg.HapticFeedback.selectionChanged?.();
-  updateCartBadge();
-  const qv=g('qv-'+days);
-  const pl=g('plan-'+days);
+  const p=plans.find(x=>x.days===days);if(!p)return;
+  const cur=cart[days]||0,next=Math.max(0,Math.min(cur+delta,p.stock,10));
+  if(next===0)delete cart[days];else cart[days]=next;
+  saveCart();tg.HapticFeedback.selectionChanged?.();updateCartBadge();
+  const qv=g('qv-'+days),pl=g('plan-'+days);
   if(qv)qv.textContent=next;
-  if(pl){
-    pl.classList.toggle('in-cart',next>0);
-    const btns=pl.querySelectorAll('.qty-btn');
-    if(btns[0])btns[0].disabled=next<=0;
-  }
+  if(pl){pl.classList.toggle('in-cart',next>0);const btns=pl.querySelectorAll('.qty-btn');if(btns[0])btns[0].disabled=next<=0;}
 }
 
 function addToCart(days,qty){
-  const p=plans.find(x=>x.days===days);
-  if(!p||p.stock<=0)return;
-  cart[days]=(cart[days]||0)+qty;
-  if(cart[days]>p.stock)cart[days]=p.stock;
-  saveCart(); // ← СОХРАНЯЕМ В localStorage
-  updateCartBadge();
+  const p=plans.find(x=>x.days===days);if(!p||p.stock<=0)return;
+  cart[days]=(cart[days]||0)+qty;if(cart[days]>p.stock)cart[days]=p.stock;
+  saveCart();updateCartBadge();
 }
 
 function updateCartBadge(){
   const total=Object.values(cart).reduce((s,v)=>s+v,0);
-  const badge=g('cartBadge');
-  badge.textContent=total;
-  badge.classList.toggle('on',total>0);
+  const badge=g('cartBadge');badge.textContent=total;badge.classList.toggle('on',total>0);
 }
 
-// ══════════════════════════════
-//  КОРЗИНА
-// ══════════════════════════════
+// ══ КОРЗИНА ══
 function renderCart(){
   const entries=Object.entries(cart).filter(([,v])=>v>0);
-  if(!entries.length){show('cartEmpty');hide('cartContent');return}
+  if(!entries.length){show('cartEmpty');hide('cartContent');return;}
   hide('cartEmpty');show('cartContent');
   const list=g('cartList');list.innerHTML='';
   let totalRub=0,totalKeys=0;
   entries.forEach(([days,qty])=>{
-    const p=plans.find(x=>x.days===+days);
-    if(!p)return;
-    const sum=p.rub*qty;
-    totalRub+=sum;totalKeys+=qty;
-    const el=document.createElement('div');
-    el.className='cart-item';
+    const p=plans.find(x=>x.days===+days);if(!p)return;
+    const sum=p.rub*qty;totalRub+=sum;totalKeys+=qty;
+    const el=document.createElement('div');el.className='cart-item';
     el.innerHTML=`
       <div class="p-ico">${+days===9999?'♾️':+days===1?'🔑':+days===7?'🗝️':'🏆'}</div>
-      <div class="ci-info">
-        <div class="ci-name">${p.label}</div>
-        <div class="ci-sub">${p.rub} ₽ × ${qty} шт.</div>
-      </div>
+      <div class="ci-info"><div class="ci-name">${p.label}</div><div class="ci-sub">${p.rub} ₽ × ${qty} шт.</div></div>
       <div class="ci-price">${sum} ₽</div>
       <button class="ci-del" onclick="removeFromCart(${days})">✕</button>`;
     list.appendChild(el);
   });
-  g('cartCount').textContent=entries.length;
-  g('cartKeys').textContent=totalKeys;
-  g('cartTotal').textContent=totalRub+' ₽';
+  g('cartCount').textContent=entries.length;g('cartKeys').textContent=totalKeys;g('cartTotal').textContent=totalRub+' ₽';
 }
 
 function removeFromCart(days){
-  delete cart[days];
-  saveCart(); // ← СОХРАНЯЕМ В localStorage
-  updateCartBadge();
-  renderCart();
-  renderPlans();
+  delete cart[days];saveCart();updateCartBadge();renderCart();renderPlans();
   tg.HapticFeedback.impactOccurred?.('light');
 }
+function clearCart(){cart={};saveCart();updateCartBadge();}
 
-function clearCart(){
-  cart={};
-  saveCart(); // ← СОХРАНЯЕМ В localStorage
-  updateCartBadge();
-}
-
-// ══════════════════════════════
-//  ОПЛАТА
-// ══════════════════════════════
+// ══ ОПЛАТА ЧЕРЕЗ FREEKASSA ══
 async function checkout(){
   const entries=Object.entries(cart).filter(([,v])=>v>0);
-  if(!entries.length){toast('Корзина пуста');return}
-  if(!apiOk){toast('❌ Сервер недоступен');return}
-  if(!UID){toast('⚠ Открой магазин через Telegram бота');return}
+  if(!entries.length){toast('Корзина пуста');return;}
+  if(!apiOk){toast('❌ Сервер недоступен');return;}
+  if(!UID){toast('⚠ Открой магазин через Telegram бота');return;}
 
   tg.HapticFeedback.impactOccurred?.('medium');
-  overlay(true,'Создаём заказ...');
-  g('payBtn').disabled=true;
+  overlay(true,'Создаём заказ...');g('payBtn').disabled=true;
 
-  let payUrl='';
-  let errors=[];
+  let payUrl='',errors=[];
 
   for(const [days,qty] of entries){
     try{
@@ -690,89 +661,57 @@ async function checkout(){
         body:JSON.stringify({days:+days,uid:UID,qty})
       },15000);
       const d=await r.json();
-      if(r.ok&&d.pay_url){payUrl=d.pay_url;}
-      else{errors.push(d.error||`Ошибка ${r.status}`);}
+      if(r.ok&&d.pay_url)payUrl=d.pay_url;
+      else errors.push(d.error||`Ошибка ${r.status}`);
     }catch(e){errors.push(e.name==='AbortError'?'таймаут':e.message);}
   }
 
-  overlay(false);
-  g('payBtn').disabled=false;
+  overlay(false);g('payBtn').disabled=false;
 
-  if(!payUrl){
-    toast('❌ '+(errors[0]||'Не удалось создать заказ'),5000);
-    return;
-  }
+  if(!payUrl){toast('❌ '+(errors[0]||'Не удалось создать заказ'),5000);return;}
 
   lastPayUrl=payUrl;
   g('payLink').href=payUrl;
   g('payLink').textContent=payUrl.length>50?payUrl.slice(0,50)+'...':payUrl;
-
   g('copyPayBtn').onclick=async()=>{
     try{await navigator.clipboard.writeText(payUrl);}
-    catch{
-      const ta=document.createElement('textarea');
-      ta.value=payUrl;ta.style.cssText='position:fixed;opacity:0';
-      document.body.appendChild(ta);ta.select();
-      document.execCommand('copy');document.body.removeChild(ta);
-    }
+    catch{const ta=document.createElement('textarea');ta.value=payUrl;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
     g('copyPayBtn').textContent='✅ СКОПИРОВАНО!';
-    setTimeout(()=>{g('copyPayBtn').textContent='📋 СКОПИРОВАТЬ ССЫЛКУ'},2500);
+    setTimeout(()=>{g('copyPayBtn').textContent='📋 СКОПИРОВАТЬ ССЫЛКУ';},2500);
     toast('✅ Ссылка скопирована!');
   };
 
-  clearCart();
-  renderPlans();
-
+  clearCart();renderPlans();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g('sPay').classList.add('active');
-  window.scrollTo(0,0);
-  tg.HapticFeedback.impactOccurred?.('heavy');
+  window.scrollTo(0,0);tg.HapticFeedback.impactOccurred?.('heavy');
 }
 
-// ══════════════════════════════
-//  ПРОФИЛЬ
-// ══════════════════════════════
+// ══ ПРОФИЛЬ ══
 let profileLoaded=false;
 async function loadProfile(){
-  if(!UID){
-    g('profileSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div><div class="e-sub">ID не определён</div></div>';
-    return;
-  }
+  if(!UID){g('profileSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div><div class="e-sub">ID не определён</div></div>';return;}
   if(profileLoaded)return;
   show('profileSpin');hide('profileContent');
   try{
     const r=await apiFetch(`/miniapp/profile?uid=${UID}`);
     if(r.ok){
       const d=await r.json();
-      g('profileName').textContent=d.name||UNAME;
-      g('profileId').textContent=d.uid;
-      g('statBought').textContent=d.bought||0;
-      g('statActive').textContent=d.active||0;
-      g('statKeys').textContent=d.total_keys||0;
-      g('statSpent').textContent=Math.round(d.spent||0);
+      g('profileName').textContent=d.name||UNAME;g('profileId').textContent=d.uid;
+      g('statBought').textContent=d.bought||0;g('statActive').textContent=d.active||0;
+      g('statKeys').textContent=d.total_keys||0;g('statSpent').textContent=Math.round(d.spent||0);
       if(d.active_keys&&d.active_keys.length){
-        show('activeKeysWrap');
-        const list=g('activeKeysList');list.innerHTML='';
+        show('activeKeysWrap');const list=g('activeKeysList');list.innerHTML='';
         d.active_keys.forEach(k=>{
-          const el=document.createElement('div');
-          el.className='key-card';
+          const el=document.createElement('div');el.className='key-card';
           const exp=k.expires&&k.expires.includes('9999')?'♾️ Навсегда':formatLeft(k.expires);
-          el.innerHTML=`
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div style="font-size:13px;font-weight:800">${k.label}</div>
-              <div style="font-size:11px;color:var(--green);font-weight:700">${exp}</div>
-            </div>
-            <div class="key-val">
-              <span style="word-break:break-all">${k.val}</span>
-              <button class="copy-btn" onclick="copyKey('${k.val}',this)">📋</button>
-            </div>`;
+          el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:800">${k.label}</div><div style="font-size:11px;color:var(--green);font-weight:700">${exp}</div></div><div class="key-val"><span style="word-break:break-all">${k.val}</span><button class="copy-btn" onclick="copyKey('${k.val}',this)">📋</button></div>`;
           list.appendChild(el);
         });
-      }else{hide('activeKeysWrap');}
-      hide('profileSpin');show('profileContent');
-      profileLoaded=true;
-    }else{throw new Error(`HTTP ${r.status}`);}
+      }else hide('activeKeysWrap');
+      hide('profileSpin');show('profileContent');profileLoaded=true;
+    }else throw new Error(`HTTP ${r.status}`);
   }catch(e){
     g('profileSpin').innerHTML=`<div class="empty"><div class="e-ico">❌</div><div class="e-ttl">Ошибка загрузки</div><div class="e-sub">${e.message}</div><button class="btn" style="margin-top:16px;max-width:200px" onclick="profileLoaded=false;loadProfile()">🔄 Повторить</button></div>`;
     show('profileSpin');
@@ -780,57 +719,30 @@ async function loadProfile(){
 }
 
 function copyKey(val,btn){
-  navigator.clipboard.writeText(val).catch(()=>{
-    const ta=document.createElement('textarea');
-    ta.value=val;ta.style.cssText='position:fixed;opacity:0';
-    document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-  });
-  btn.textContent='✅';
-  setTimeout(()=>{btn.textContent='📋'},2000);
-  toast('✅ Ключ скопирован!');
+  navigator.clipboard.writeText(val).catch(()=>{const ta=document.createElement('textarea');ta.value=val;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});
+  btn.textContent='✅';setTimeout(()=>{btn.textContent='📋';},2000);toast('✅ Ключ скопирован!');
 }
 
-// ══════════════════════════════
-//  ИСТОРИЯ
-// ══════════════════════════════
+// ══ ИСТОРИЯ ══
 let histLoaded=false;
 async function loadHistory(){
-  if(!UID){
-    g('histSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div></div>';
-    return;
-  }
-  if(histLoaded)return;
-  show('histSpin');hide('histContent');
+  if(!UID){g('histSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div></div>';return;}
+  if(histLoaded)return;show('histSpin');hide('histContent');
   try{
     const r=await apiFetch(`/miniapp/history?uid=${UID}`);
     if(r.ok){
-      const orders=await r.json();
-      hide('histSpin');show('histContent');
-      if(!orders.length){show('histEmpty');hide('histList');histLoaded=true;return}
-      hide('histEmpty');
-      const list=g('histList');list.innerHTML='';
+      const orders=await r.json();hide('histSpin');show('histContent');
+      if(!orders.length){show('histEmpty');hide('histList');histLoaded=true;return;}
+      hide('histEmpty');const list=g('histList');list.innerHTML='';
       orders.forEach(o=>{
-        const el=document.createElement('div');
-        el.className='hist-item';
+        const el=document.createElement('div');el.className='hist-item';
         const sMap={paid:'✅ Оплачен',pending:'⏳ Ожидает',cancelled:'❌ Отменён'};
         const sCls={paid:'paid',pending:'pending',cancelled:'cancelled'};
-        el.innerHTML=`
-          <div class="hist-top">
-            <div>
-              <div class="hist-plan">${o.label||o.days+' дней'}</div>
-              <div class="hist-meta">№${o.id} · ${o.rub} ₽ · ${fmtDate(o.created)}</div>
-            </div>
-            <div class="hist-status ${sCls[o.status]||'pending'}">${sMap[o.status]||o.status}</div>
-          </div>
-          ${o.keys&&o.keys.length?o.keys.map(k=>`
-            <div class="hist-key" onclick="copyFromHist('${k}',this)" style="cursor:pointer">
-              🔑 ${k} <span style="color:var(--muted);font-size:10px">нажми чтобы скопировать</span>
-            </div>`).join(''):''}`;
+        el.innerHTML=`<div class="hist-top"><div><div class="hist-plan">${o.label||o.days+' дней'}</div><div class="hist-meta">№${o.id} · ${o.rub} ₽ · ${fmtDate(o.created)}</div></div><div class="hist-status ${sCls[o.status]||'pending'}">${sMap[o.status]||o.status}</div></div>${o.keys&&o.keys.length?o.keys.map(k=>`<div class="hist-key" onclick="copyFromHist('${k}',this)" style="cursor:pointer">🔑 ${k} <span style="color:var(--muted);font-size:10px">нажми чтобы скопировать</span></div>`).join(''):''}`;
         list.appendChild(el);
       });
       histLoaded=true;
-    }else{throw new Error(`HTTP ${r.status}`);}
+    }else throw new Error(`HTTP ${r.status}`);
   }catch(e){
     g('histSpin').innerHTML=`<div class="empty"><div class="e-ico">❌</div><div class="e-ttl">Ошибка</div><div class="e-sub">${e.message}</div><button class="btn" style="margin-top:16px;max-width:200px" onclick="histLoaded=false;loadHistory()">🔄 Повторить</button></div>`;
     show('histSpin');
@@ -838,51 +750,18 @@ async function loadHistory(){
 }
 
 function copyFromHist(val,el){
-  navigator.clipboard.writeText(val).catch(()=>{
-    const ta=document.createElement('textarea');
-    ta.value=val;ta.style.cssText='position:fixed;opacity:0';
-    document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-  });
-  toast('✅ Ключ скопирован!');
-  el.style.borderColor='var(--green)';
-  setTimeout(()=>{el.style.borderColor=''},2000);
+  navigator.clipboard.writeText(val).catch(()=>{const ta=document.createElement('textarea');ta.value=val;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});
+  toast('✅ Ключ скопирован!');el.style.borderColor='var(--green)';setTimeout(()=>{el.style.borderColor='';},2000);
 }
 
-// ── Утилиты ──
-function fmtDate(s){
-  if(!s)return'—';
-  try{
-    const d=new Date(s.replace(' ','T')+'Z');
-    return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
-  }catch{return s.slice(0,10)}
-}
+function fmtDate(s){if(!s)return'—';try{const d=new Date(s.replace(' ','T')+'Z');return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return s.slice(0,10);}}
+function formatLeft(s){if(!s)return'—';try{if(s.includes('9999'))return'♾️';const diff=new Date(s)-new Date();if(diff<=0)return'❌ Истёк';const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);return d>0?`${d}д ${h}ч`:`${h}ч`;}catch{return'—';}}
 
-function formatLeft(s){
-  if(!s)return'—';
-  try{
-    if(s.includes('9999'))return'♾️';
-    const diff=new Date(s)-new Date();
-    if(diff<=0)return'❌ Истёк';
-    const d=Math.floor(diff/86400000);
-    const h=Math.floor((diff%86400000)/3600000);
-    return d>0?`${d}д ${h}ч`:`${h}ч`;
-  }catch{return'—'}
-}
-
-// ── Автообновление остатков ──
 setInterval(async()=>{
   if(!apiOk||curScreen!=='sShop')return;
-  try{
-    const r=await apiFetch('/miniapp/plans');
-    if(r.ok){
-      const fresh=await r.json();
-      if(Array.isArray(fresh)&&fresh.length){plans=fresh;renderPlans()}
-    }
-  }catch{}
+  try{const r=await apiFetch('/miniapp/plans');if(r.ok){const f=await r.json();if(Array.isArray(f)&&f.length){plans=f;renderPlans();}}}catch{}
 },30000);
 
-// ── ЗАПУСК ──
 loadShop();
 </script>
 </body>
