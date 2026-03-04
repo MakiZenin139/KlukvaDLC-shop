@@ -3,39 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KlukvaDLC Shop</title>
+<title>Shop — KlukvaDLC & LebRo VIP</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0e0e10;--surf:#18181b;--surf2:#222226;--brd:#2e2e33;
-  --acc:#e63946;--acc2:rgba(230,57,70,.13);--gold:#f4c430;
-  --green:#30d158;--txt:#f2f2f7;--muted:#8e8e93;--r:16px;--nav:64px;
+  --acc:#e63946;--acc2:rgba(230,57,70,.13);
+  --lebro:#f59e0b;--lebro2:rgba(245,158,11,.13);--lebro-dark:#92400e;
+  --gold:#f4c430;--green:#30d158;--txt:#f2f2f7;--muted:#8e8e93;--r:16px;--nav:64px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* ══ CANVAS BG ══ */
 #bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 
-/* ── SCREENS ── */
 .screen{display:none;flex-direction:column;min-height:100vh;padding-bottom:var(--nav);position:relative;z-index:1}
 .screen.active{display:flex;animation:fadeIn .22s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 
-/* ── NAV ── */
+/* NAV */
 .nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:rgba(18,18,20,.94);backdrop-filter:blur(16px);border-top:1px solid var(--brd);display:flex;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:var(--muted);font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;position:relative;transition:color .15s;letter-spacing:.3px}
 .nav-btn.active{color:var(--acc)}
+.nav-btn.active.lebro-mode{color:var(--lebro)}
 .nav-btn .ico{font-size:20px;line-height:1}
 .badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--acc);color:#fff;font-size:9px;font-weight:900;min-width:16px;height:16px;border-radius:8px;padding:0 4px;display:none;align-items:center;justify-content:center}
 .badge.on{display:flex}
 
-/* ── HEADER ── */
-.hdr{padding:18px 18px 14px;flex-shrink:0;background:linear-gradient(150deg,rgba(26,5,5,.96) 0%,rgba(14,14,16,.88) 60%);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
-.hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.1) 0%,transparent 70%);pointer-events:none}
+/* HEADER */
+.hdr{padding:18px 18px 14px;flex-shrink:0;backdrop-filter:blur(12px);border-bottom:1px solid var(--brd);position:relative;overflow:hidden}
+.hdr.klukva-hdr{background:linear-gradient(150deg,rgba(26,5,5,.96) 0%,rgba(14,14,16,.88) 60%)}
+.hdr.klukva-hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.1) 0%,transparent 70%);pointer-events:none}
+.hdr.lebro-hdr{background:linear-gradient(150deg,rgba(20,14,3,.96) 0%,rgba(14,14,16,.88) 60%)}
+.hdr.lebro-hdr::before{content:'';position:absolute;top:-80px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(245,158,11,.12) 0%,transparent 70%);pointer-events:none}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;line-height:1}
 .logo em{color:var(--acc);font-style:normal}
+.logo.lebro-logo em{color:var(--lebro)}
 .logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .user-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,34,38,.8);border:1px solid var(--brd);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--muted);margin-top:8px}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s}
@@ -43,13 +47,20 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .dot.r{background:var(--acc);box-shadow:0 0 6px var(--acc)}
 .dot.gr{background:var(--muted)}
 
-/* ── API BAR ── */
+/* CATEGORY TABS */
+.cat-tabs{display:flex;margin:0 16px 0;gap:8px;padding:12px 0 0}
+.cat-tab{flex:1;padding:10px 8px;border:1.5px solid var(--brd);border-radius:12px;background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.3px}
+.cat-tab.active-klukva{border-color:var(--acc);background:var(--acc2);color:var(--acc)}
+.cat-tab.active-lebro{border-color:var(--lebro);background:var(--lebro2);color:var(--lebro)}
+.cat-tab:active{transform:scale(.97)}
+
+/* API BAR */
 .api-bar{padding:5px 18px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid var(--brd);backdrop-filter:blur(8px);transition:all .3s}
 .api-bar.ok{color:var(--green);background:rgba(48,209,88,.05)}
 .api-bar.fail{color:var(--acc);background:rgba(230,57,70,.06)}
 .api-bar.load{color:var(--muted)}
 
-/* ══ TICKER ══ */
+/* TICKER */
 .ticker-wrap{overflow:hidden;background:linear-gradient(90deg,rgba(230,57,70,.03),rgba(230,57,70,.09),rgba(230,57,70,.03));border-bottom:1px solid rgba(230,57,70,.18);padding:7px 0;flex-shrink:0;display:none;position:relative}
 .ticker-wrap.visible{display:block}
 .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none}
@@ -61,53 +72,58 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .ticker-item .ti-name{color:var(--acc)}
 .ticker-item .ti-plan{color:var(--txt)}
 .ticker-item .ti-price{color:var(--gold)}
-.ticker-item .ti-sep{color:var(--brd);margin:0 2px}
+.ticker-item .ti-sep{color:var(--brd)}
 
-/* ── CONTENT ── */
+/* CONTENT */
 .cnt{padding:16px;flex:1;max-width:480px;width:100%;margin:0 auto}
 .lbl{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:10px;padding-left:2px;font-weight:700}
 
-/* ── SPINNER ── */
+/* SPINNER */
 .spin-wrap{text-align:center;padding:60px 20px}
 .spinner{width:36px;height:36px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 12px}
+.spinner.lebro-spin{border-top-color:var(--lebro)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin-txt{font-size:12px;color:var(--muted)}
 
-/* ── PLAN CARD ── */
+/* PLAN CARD */
 .plan{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:9px;transition:border-color .15s,background .15s,box-shadow .15s}
 .plan:not(.out):active{border-color:rgba(230,57,70,.5);box-shadow:0 0 20px rgba(230,57,70,.1)}
+.plan.lebro-plan:not(.out):active{border-color:rgba(245,158,11,.5);box-shadow:0 0 20px rgba(245,158,11,.1)}
 .plan.out{opacity:.4}
 .plan.forever{border-color:rgba(244,196,48,.25)}
+.plan.in-cart{border-color:rgba(230,57,70,.5)!important;background:var(--acc2)!important}
+.plan.lebro-plan.in-cart{border-color:rgba(245,158,11,.5)!important;background:var(--lebro2)!important}
 .p-ico{width:42px;height:42px;border-radius:12px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.p-ico.lebro-ico{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2)}
 .p-meta{flex:1;min-width:0}
 .p-name{font-size:15px;font-weight:800}
 .p-stock{font-size:11px;font-weight:700;margin-top:2px}
-.p-stock.ok{color:var(--green)}
-.p-stock.low{color:#ff9f0a}
-.p-stock.out{color:var(--acc)}
+.p-stock.ok{color:var(--green)}.p-stock.low{color:#ff9f0a}.p-stock.out{color:var(--acc)}
 .p-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
 .p-price{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;line-height:1}
+.p-price.lebro-price{color:var(--lebro)}
 .p-price-old{font-size:12px;color:var(--muted);text-decoration:line-through;font-weight:700;line-height:1}
 .disc-badge{background:var(--green);color:#0a2e14;font-size:10px;font-weight:900;padding:2px 7px;border-radius:6px;letter-spacing:.3px;white-space:nowrap}
 .hot-badge{position:absolute;top:-1px;right:-1px;background:var(--gold);color:#1a1200;font-size:8px;font-weight:900;padding:3px 8px;border-radius:0 var(--r) 0 8px;text-transform:uppercase;letter-spacing:.5px}
 
-/* ── QTY ── */
+/* QTY */
 .qty{display:flex;align-items:center;background:var(--surf2);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
 .qty-btn{width:32px;height:32px;border:none;background:none;color:var(--txt);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s}
 .qty-btn:active{background:var(--brd)}
 .qty-btn:disabled{color:var(--muted);cursor:not-allowed}
 .qty-val{min-width:28px;text-align:center;font-size:14px;font-weight:800}
-.in-cart{border-color:var(--acc)!important;background:var(--acc2)!important}
 
-/* ── CART ── */
+/* CART */
 .cart-item{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .ci-info{flex:1;min-width:0}
 .ci-name{font-size:14px;font-weight:800}
 .ci-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .ci-price{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);flex-shrink:0}
+.ci-price.lebro-ci-price{color:var(--lebro)}
 .ci-del{width:32px;height:32px;border:none;background:rgba(230,57,70,.12);border-radius:8px;color:var(--acc);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cart-sep{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 2px 6px;font-weight:700}
 
-/* ── TOTAL ── */
+/* TOTAL */
 .total-block{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;margin:12px 0 14px}
 .total-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
 .total-row+.total-row{border-top:1px solid var(--brd);padding-top:10px;margin-top:6px}
@@ -116,20 +132,22 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .total-row.big .tl{font-size:14px;font-weight:700;color:var(--txt)}
 .total-row.big .tv{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--acc);letter-spacing:1px}
 
-/* ── BUTTONS ── */
+/* BUTTONS */
 .btn{width:100%;padding:16px;background:var(--acc);color:#fff;border:none;border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;cursor:pointer;transition:opacity .15s,transform .1s;position:relative;overflow:hidden}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn.secondary{background:rgba(34,34,38,.9);border:1.5px solid var(--brd);color:var(--txt);font-size:15px;letter-spacing:1px}
+.btn.lebro-btn{background:var(--lebro)}
+.btn.lebro-btn:disabled{opacity:.35}
 
-/* ── EMPTY ── */
+/* EMPTY */
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty .e-ico{font-size:52px;margin-bottom:14px}
 .empty .e-ttl{font-size:17px;font-weight:800;color:var(--txt);margin-bottom:8px}
 .empty .e-sub{font-size:13px;line-height:1.6}
 
-/* ── PAY SCREEN ── */
+/* PAY SCREEN */
 .pay-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center}
 .pay-ico{font-size:60px;margin-bottom:16px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
@@ -139,7 +157,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .pay-link-box span{display:block;font-size:10px;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
 .pay-link-box a{color:var(--acc);text-decoration:none;font-size:12px}
 
-/* ── PROFILE ── */
+/* PROFILE */
 .profile-card{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:20px;margin-bottom:12px}
 .profile-avatar{width:64px;height:64px;border-radius:50%;background:var(--acc2);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px}
 .profile-name{font-size:18px;font-weight:800;text-align:center}
@@ -149,11 +167,13 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--acc)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;font-weight:700}
 .key-card{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.key-card.lebro-key{border-color:rgba(245,158,11,.25)}
 .key-val{font-family:monospace;font-size:13px;background:var(--surf2);border:1px solid var(--brd);border-radius:8px;padding:8px 10px;margin-top:8px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .copy-btn{font-size:14px;cursor:pointer;flex-shrink:0;background:none;border:none;color:var(--muted);padding:0}
 
-/* ── HISTORY ── */
+/* HISTORY */
 .hist-item{background:rgba(24,24,27,.82);backdrop-filter:blur(10px);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.hist-item.lebro-hist{border-color:rgba(245,158,11,.2)}
 .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .hist-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
 .hist-status.paid{color:var(--green);background:rgba(48,209,88,.12)}
@@ -163,14 +183,14 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .hist-meta{font-size:11px;color:var(--muted);margin-top:3px}
 .hist-key{font-family:monospace;font-size:11px;background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:6px 8px;margin-top:8px;word-break:break-all}
 
-/* ── ERR BLOCK ── */
+/* ERR BLOCK */
 .err-block{background:var(--acc2);border:1.5px solid rgba(230,57,70,.3);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px;display:none}
 .err-block.on{display:block}
 .err-block .eb-ico{font-size:36px;margin-bottom:10px}
 .err-block .eb-ttl{font-size:16px;font-weight:800;margin-bottom:6px}
 .err-block .eb-msg{font-size:12px;color:var(--muted);line-height:1.6}
 
-/* ── OVERLAY & TOAST ── */
+/* OVERLAY & TOAST */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .overlay.on{display:flex}
 .ov-txt{color:var(--muted);font-size:13px}
@@ -179,24 +199,37 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 .infos{display:flex;flex-direction:column;gap:7px;margin-top:14px}
 .info-row{display:flex;align-items:flex-start;gap:10px;background:rgba(255,255,255,.025);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.5}
 .ii{font-size:14px;flex-shrink:0;margin-top:1px}
+
+/* VIP BANNER */
+.vip-banner{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.3);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.vb-ico{font-size:32px}
+.vb-text{flex:1}
+.vb-title{font-size:14px;font-weight:900;color:var(--lebro)}
+.vb-sub{font-size:11px;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
 
-<!-- ══ CANVAS: МЕРЦАЮЩИЕ ТОЧКИ-СОЗВЕЗДИЯ ══ -->
 <canvas id="bgCanvas"></canvas>
 
 <!-- ══ МАГАЗИН ══ -->
 <div class="screen active" id="sShop">
-  <div class="hdr">
-    <div class="logo">Klukva<em>DLC</em></div>
-    <div class="logo-sub">Магазин ключей</div>
+  <div class="hdr klukva-hdr" id="shopHdr">
+    <div class="logo" id="shopLogo">Klukva<em>DLC</em></div>
+    <div class="logo-sub" id="shopLogoSub">Магазин ключей</div>
     <div class="user-pill"><span class="dot gr" id="dot1"></span><span id="uname1">Загрузка...</span></div>
+  </div>
+  <!-- Категории -->
+  <div style="padding:0 16px 0;background:rgba(14,14,16,.9);border-bottom:1px solid var(--brd)">
+    <div class="cat-tabs">
+      <button class="cat-tab active-klukva" id="tabKlukva" onclick="switchCategory('klukvadlc')">🍓 KlukvaDLC</button>
+      <button class="cat-tab" id="tabLebro" onclick="switchCategory('lebro')">👑 LebRo VIP</button>
+    </div>
   </div>
   <div class="api-bar load" id="apiBar1"><span id="apiTxt1">⏳ Проверяем сервер...</span></div>
   <div class="ticker-wrap" id="tickerWrap"><div class="ticker-inner" id="tickerInner"></div></div>
   <div class="cnt">
-    <div class="spin-wrap" id="shopSpin"><div class="spinner"></div><div class="spin-txt">Загрузка...</div></div>
+    <div class="spin-wrap" id="shopSpin"><div class="spinner" id="shopSpinner"></div><div class="spin-txt">Загрузка...</div></div>
     <div style="display:none" id="shopContent">
       <div class="err-block" id="shopErr">
         <div class="eb-ico">🔌</div>
@@ -205,7 +238,16 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
         <button class="btn" style="margin-top:14px;font-size:14px;padding:12px" onclick="loadShop()">🔄 Повторить</button>
       </div>
       <div id="planListWrap">
-        <div class="lbl">Выбери тариф и количество</div>
+        <div id="lebroBanner" style="display:none">
+          <div class="vip-banner">
+            <div class="vb-ico">👑</div>
+            <div class="vb-text">
+              <div class="vb-title">LebRo VIP — эксклюзивный доступ</div>
+              <div class="vb-sub">После покупки получишь одноразовую ссылку в VIP группу</div>
+            </div>
+          </div>
+        </div>
+        <div class="lbl" id="planLbl">Выбери тариф и количество</div>
         <div id="planList"></div>
       </div>
     </div>
@@ -214,8 +256,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 
 <!-- ══ КОРЗИНА ══ -->
 <div class="screen" id="sCart">
-  <div class="hdr">
-    <div class="logo">Klukva<em>DLC</em></div>
+  <div class="hdr klukva-hdr">
+    <div class="logo">Klukva<em>DLC</em> <span style="font-size:14px;color:var(--lebro)">& LebRo</span></div>
     <div class="logo-sub">Корзина</div>
   </div>
   <div class="cnt">
@@ -226,17 +268,27 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
       <button class="btn" style="margin-top:20px;max-width:220px" onclick="goTo('sShop')">🛍 В магазин</button>
     </div>
     <div id="cartContent" style="display:none">
-      <div class="lbl">Твой заказ</div>
-      <div id="cartList"></div>
+      <div id="cartKlukvaSection" style="display:none">
+        <div class="cart-sep">🍓 KlukvaDLC</div>
+        <div id="cartKlukvaList"></div>
+      </div>
+      <div id="cartLebroSection" style="display:none">
+        <div class="cart-sep" style="color:var(--lebro)">👑 LebRo VIP</div>
+        <div id="cartLebroList"></div>
+      </div>
       <div class="total-block">
-        <div class="total-row"><span class="tl">Позиций</span><span class="tv" id="cartCount">0</span></div>
-        <div class="total-row"><span class="tl">Ключей</span><span class="tv" id="cartKeys">0</span></div>
+        <div class="total-row"><span class="tl">Всего позиций</span><span class="tv" id="cartCount">0</span></div>
         <div class="total-row big"><span class="tl">💰 Итого</span><span class="tv" id="cartTotal">0 ₽</span></div>
       </div>
-      <button class="btn" id="payBtn" onclick="checkout()">💳 ОПЛАТИТЬ</button>
+      <div id="checkoutKlukva" style="display:none">
+        <button class="btn" id="payBtnKlukva" onclick="checkout('klukvadlc')">🍓 ОПЛАТИТЬ KLUKVADLC</button>
+      </div>
+      <div id="checkoutLebro" style="display:none;margin-top:10px">
+        <button class="btn lebro-btn" id="payBtnLebro" onclick="checkout('lebro')">👑 ОПЛАТИТЬ LEBRO VIP</button>
+      </div>
       <div class="infos" style="margin-top:12px">
-        <div class="info-row"><span class="ii">⚡</span><span>Ключи придут в Telegram <b>автоматически</b></span></div>
-        <div class="info-row"><span class="ii">🔒</span><span>Оплата через Freekassa — карты, СБП</span></div>
+        <div class="info-row"><span class="ii">⚡</span><span>Ключи придут <b>автоматически</b> после оплаты</span></div>
+        <div class="info-row"><span class="ii">🔒</span><span>Freekassa — карты, СБП, безопасно</span></div>
       </div>
     </div>
   </div>
@@ -245,25 +297,24 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 <!-- ══ ЭКРАН ОПЛАТЫ ══ -->
 <div class="screen" id="sPay">
   <div class="pay-screen">
-    <div class="pay-ico">🎉</div>
-    <div class="pay-ttl">Заказ создан!</div>
+    <div class="pay-ico" id="payIco">🎉</div>
+    <div class="pay-ttl" id="payTtl">Заказ создан!</div>
     <div class="pay-msg">
-      Ссылка на оплату отправлена <b>в чат Telegram</b>.<br>
-      Нажми на неё — откроется страница оплаты.<br><br>
-      После оплаты ключи придут <b>автоматически</b> 🔑
+      Нажми кнопку оплаты ниже.<br>
+      После оплаты ключ придёт <b>автоматически</b> 🔑
     </div>
     <div class="pay-link-box">
-      <span>Или нажми ссылку прямо здесь:</span>
+      <span>Ссылка на оплату:</span>
       <a id="payLink" href="#" target="_blank">Загрузка...</a>
     </div>
     <button class="btn" id="copyPayBtn" style="margin-bottom:10px">📋 СКОПИРОВАТЬ ССЫЛКУ</button>
-    <button class="btn secondary" onclick="goTo('sShop');clearCart()">🛍 В магазин</button>
+    <button class="btn secondary" onclick="goTo('sShop')">🛍 В магазин</button>
   </div>
 </div>
 
 <!-- ══ ПРОФИЛЬ ══ -->
 <div class="screen" id="sProfile">
-  <div class="hdr">
+  <div class="hdr klukva-hdr">
     <div class="logo">Klukva<em>DLC</em></div>
     <div class="logo-sub">Профиль</div>
   </div>
@@ -291,7 +342,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 
 <!-- ══ ИСТОРИЯ ══ -->
 <div class="screen" id="sHistory">
-  <div class="hdr">
+  <div class="hdr klukva-hdr">
     <div class="logo">Klukva<em>DLC</em></div>
     <div class="logo-sub">История покупок</div>
   </div>
@@ -308,7 +359,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
   </div>
 </div>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav class="nav">
   <button class="nav-btn active" id="nb-sShop" onclick="goTo('sShop')"><div class="ico">🛍</div>Магазин</button>
   <button class="nav-btn" id="nb-sCart" onclick="goTo('sCart')"><div class="ico">🛒</div>Корзина<div class="badge" id="cartBadge">0</div></button>
@@ -320,161 +371,143 @@ html,body{background:var(--bg);color:var(--txt);font-family:'Nunito',sans-serif;
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════
-//  ✨ АНИМАЦИЯ ТОЧЕК-СОЗВЕЗДИЙ
-//  Цвета подобраны под тёмно-красный фон
-// ════════════════════════════════════════
+// ════════════════════════
+//  АНИМАЦИЯ ТОЧЕК
+// ════════════════════════
 (function(){
-  const cv  = document.getElementById('bgCanvas');
-  const ctx = cv.getContext('2d');
-
-  // Палитра: красные, бордовые + редкие светлые для контраста
-  const PAL = [
-    [230, 57,  70],   // #e63946  — основной красный
-    [180, 28,  42],   // тёмно-красный
-    [255, 90, 100],   // светло-красный
-    [200, 40,  55],   // средний красный
-    [242,242, 247],   // почти белый (редкие яркие точки)
-    [140, 18,  32],   // бордо
-  ];
-
-  let W, H, dots;
-
-  function resize(){
-    W = cv.width  = window.innerWidth;
-    H = cv.height = window.innerHeight;
-  }
-
-  function rand(a,b){ return a + Math.random()*(b-a); }
-
+  const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
+  const PAL=[[230,57,70],[180,28,42],[255,90,100],[200,40,55],[242,242,247],[140,18,32],[245,158,11],[200,120,0]];
+  let W,H,dots;
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  function rand(a,b){return a+Math.random()*(b-a);}
   function mkDot(){
-    const [r,g,b] = PAL[Math.floor(Math.random()*PAL.length)];
-    // белые/светлые точки — маленькие, ярче; красные — крупнее, тусклее
-    const isLight = (r>200 && g>200);
-    return {
-      x: rand(0, W), y: rand(0, H),
-      vx: rand(-.35,.35), vy: rand(-.35,.35),
-      radius: isLight ? rand(2.5,4.5) : rand(4.0,7.0),
-      r, g, b,
-      phase: rand(0, Math.PI*2),
-      speed: rand(0.4, 1.1),   // скорость мерцания
-      baseA: isLight ? rand(.8,1.0) : rand(.6,.9),
-    };
+    const [r,g,b]=PAL[Math.floor(Math.random()*PAL.length)];
+    const isLight=(r>200&&g>200);
+    return{x:rand(0,W),y:rand(0,H),vx:rand(-.35,.35),vy:rand(-.35,.35),
+      radius:isLight?rand(2.5,4.5):rand(4,7),r,g,b,
+      phase:rand(0,Math.PI*2),speed:rand(0.4,1.1),baseA:isLight?rand(.8,1):rand(.6,.9)};
   }
-
-  function init(){
-    resize();
-    const n = Math.min(100, Math.floor(W*H/8500));
-    dots = Array.from({length:n}, mkDot);
-  }
-
-  const LINK = 120;   // макс. дистанция для линий
-
+  function init(){resize();dots=Array.from({length:Math.min(100,Math.floor(W*H/8500))},mkDot);}
+  const LINK=120;
   function frame(){
-    ctx.clearRect(0,0,W,H);
-    const t = performance.now()/1000;
-
-    // Обновляем позиции
+    ctx.clearRect(0,0,W,H);const t=performance.now()/1000;
+    for(const d of dots){d.x+=d.vx;d.y+=d.vy;
+      if(d.x<-5)d.x=W+5;else if(d.x>W+5)d.x=-5;
+      if(d.y<-5)d.y=H+5;else if(d.y>H+5)d.y=-5;}
+    for(let i=0;i<dots.length;i++){const a=dots[i];
+      for(let j=i+1;j<dots.length;j++){const b=dots[j];
+        const dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist>=LINK)continue;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(${Math.round((a.r+b.r)/2)},${Math.round((a.g+b.g)/2)},${Math.round((a.b+b.b)/2)},${(1-dist/LINK)*0.14})`;
+        ctx.lineWidth=.55;ctx.stroke();}}
     for(const d of dots){
-      d.x += d.vx; d.y += d.vy;
-      if(d.x<-5) d.x=W+5;  else if(d.x>W+5) d.x=-5;
-      if(d.y<-5) d.y=H+5;  else if(d.y>H+5) d.y=-5;
-    }
-
-    // Линии между близкими точками
-    for(let i=0;i<dots.length;i++){
-      const a = dots[i];
-      for(let j=i+1;j<dots.length;j++){
-        const b  = dots[j];
-        const dx = a.x-b.x, dy = a.y-b.y;
-        const dist = Math.sqrt(dx*dx+dy*dy);
-        if(dist >= LINK) continue;
-        const alpha = (1-dist/LINK)*0.14;
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        // Цвет линии = усреднённый цвет двух точек
-        const lr = Math.round((a.r+b.r)/2);
-        const lg = Math.round((a.g+b.g)/2);
-        const lb = Math.round((a.b+b.b)/2);
-        ctx.strokeStyle = `rgba(${lr},${lg},${lb},${alpha})`;
-        ctx.lineWidth   = 0.55;
-        ctx.stroke();
-      }
-    }
-
-    // Точки с мерцанием
-    for(const d of dots){
-      const alpha = d.baseA*(0.55 + 0.45*Math.sin(t*d.speed + d.phase));
-
-      // Внешнее свечение
-      const grd = ctx.createRadialGradient(d.x,d.y,0, d.x,d.y, d.radius*4.5);
-      grd.addColorStop(0, `rgba(${d.r},${d.g},${d.b},${alpha*0.5})`);
-      grd.addColorStop(1, `rgba(${d.r},${d.g},${d.b},0)`);
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.radius*4.5, 0, Math.PI*2);
-      ctx.fillStyle = grd;
-      ctx.fill();
-
-      // Ядро
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.radius, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(${d.r},${d.g},${d.b},${alpha})`;
-      ctx.fill();
-    }
-
-    requestAnimationFrame(frame);
-  }
-
-  window.addEventListener('resize', ()=>{ resize(); });
-  init();
-  frame();
+      const alpha=d.baseA*(0.55+0.45*Math.sin(t*d.speed+d.phase));
+      const grd=ctx.createRadialGradient(d.x,d.y,0,d.x,d.y,d.radius*4.5);
+      grd.addColorStop(0,`rgba(${d.r},${d.g},${d.b},${alpha*0.5})`);
+      grd.addColorStop(1,`rgba(${d.r},${d.g},${d.b},0)`);
+      ctx.beginPath();ctx.arc(d.x,d.y,d.radius*4.5,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+      ctx.beginPath();ctx.arc(d.x,d.y,d.radius,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${d.r},${d.g},${d.b},${alpha})`;ctx.fill();}
+    requestAnimationFrame(frame);}
+  window.addEventListener('resize',()=>resize());
+  init();frame();
 })();
 
-// ════════════════════════════════
-//  ⚙️ КОНФИГ
-// ════════════════════════════════
-const API      = "https://klukvadlc.ddns.net";
-const CART_KEY = "klukvadlc_cart_v1";
+// ════════════════════════
+//  КОНФИГ
+// ════════════════════════
+const API='https://klukvadlc.ddns.net';
 
-const tg = window.Telegram?.WebApp ?? {
+const tg=window.Telegram?.WebApp??{
   ready:()=>{},expand:()=>{},
   openLink:url=>window.open(url,'_blank'),
   setHeaderColor:()=>{},setBackgroundColor:()=>{},
   HapticFeedback:{selectionChanged:()=>{},impactOccurred:()=>{}},
   initData:'',initDataUnsafe:{user:{id:0,first_name:'Гость'}}
 };
-tg.ready(); tg.expand();
+tg.ready();tg.expand();
 try{tg.setHeaderColor('#0e0e10');tg.setBackgroundColor('#0e0e10')}catch{}
 
-const urlP       = new URLSearchParams(window.location.search);
-const PARAM_UID  = parseInt(urlP.get('uid'))||0;
-const PARAM_DAYS = parseInt(urlP.get('days'))||0;
-const UID   = tg.initDataUnsafe?.user?.id || PARAM_UID || 0;
-const UNAME = tg.initDataUnsafe?.user?.first_name || 'Гость';
-const IDATA = tg.initData || '';
+const urlP=new URLSearchParams(window.location.search);
+const PARAM_UID=parseInt(urlP.get('uid'))||0;
+const PARAM_DAYS=parseInt(urlP.get('days'))||0;
+const PARAM_CAT=urlP.get('cat')||'klukvadlc';
+const UID=tg.initDataUnsafe?.user?.id||PARAM_UID||0;
+const UNAME=tg.initDataUnsafe?.user?.first_name||'Гость';
+const IDATA=tg.initData||'';
 
-document.getElementById('uname1').textContent = UNAME;
+document.getElementById('uname1').textContent=UNAME;
 
-// ══ КОРЗИНА — localStorage ══
-let cart = (()=>{
+// ════════════════════════
+//  КАТЕГОРИЯ
+// ════════════════════════
+let currentCategory = PARAM_CAT==='lebro' ? 'lebro' : 'klukvadlc';
+
+function switchCategory(cat){
+  currentCategory=cat;
+  const isLebro=cat==='lebro';
+
+  // Tabs
+  g('tabKlukva').className='cat-tab'+(isLebro?'':' active-klukva');
+  g('tabLebro').className='cat-tab'+(isLebro?' active-lebro':'');
+
+  // Header
+  g('shopHdr').className='hdr '+(isLebro?'lebro-hdr':'klukva-hdr');
+  g('shopLogo').className='logo'+(isLebro?' lebro-logo':'');
+  g('shopLogo').innerHTML=isLebro?'Leb<em>Ro VIP</em>':'Klukva<em>DLC</em>';
+  g('shopLogoSub').textContent=isLebro?'VIP доступ':'Магазин ключей';
+
+  // Spinner color
+  g('shopSpinner').className='spinner'+(isLebro?' lebro-spin':'');
+
+  // Banner
+  g('lebroBanner').style.display=isLebro?'block':'none';
+
+  // Label
+  g('planLbl').textContent=isLebro?'Выбери VIP период':'Выбери тариф и количество';
+
+  // API bar color
+  const bar=g('apiBar1');
+  if(bar&&bar.classList.contains('ok')){
+    bar.style.setProperty('--bar-color',isLebro?'var(--lebro)':'var(--green)');
+  }
+
+  tg.HapticFeedback.selectionChanged?.();
+  loadShop();
+}
+
+// ════════════════════════
+//  КОРЗИНА — раздельная
+// ════════════════════════
+const CART_KEY_KLUKVA='klukvadlc_cart_v2';
+const CART_KEY_LEBRO='lebro_cart_v1';
+
+function loadStoredCart(key){
   try{
-    const raw = localStorage.getItem(CART_KEY);
-    if(!raw) return {};
-    const p = JSON.parse(raw), c={};
-    for(const [k,v] of Object.entries(p)){
-      const d=parseInt(k), q=parseInt(v);
-      if(!isNaN(d)&&!isNaN(q)&&q>0) c[d]=q;
-    }
+    const raw=localStorage.getItem(key);
+    if(!raw)return{};
+    const p=JSON.parse(raw),c={};
+    for(const[k,v]of Object.entries(p)){const d=parseInt(k),q=parseInt(v);if(!isNaN(d)&&!isNaN(q)&&q>0)c[d]=q;}
     return c;
   }catch{return{};}
-})();
-function saveCart(){ try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch{} }
+}
 
-let plans=[], apiOk=false, lastPayUrl='';
-const g    = id=>document.getElementById(id);
-const hide = id=>g(id)&&(g(id).style.display='none');
-const show = (id,d='block')=>g(id)&&(g(id).style.display=d);
+let cartKlukva=loadStoredCart(CART_KEY_KLUKVA);
+let cartLebro=loadStoredCart(CART_KEY_LEBRO);
+
+function saveCart(cat){
+  try{
+    if(cat==='lebro')localStorage.setItem(CART_KEY_LEBRO,JSON.stringify(cartLebro));
+    else localStorage.setItem(CART_KEY_KLUKVA,JSON.stringify(cartKlukva));
+  }catch{}
+}
+function getCart(cat){return cat==='lebro'?cartLebro:cartKlukva;}
+
+let plansKlukva=[],plansLebro=[],apiOk=false,lastPayUrl='';
+const g=id=>document.getElementById(id);
+const hide=id=>g(id)&&(g(id).style.display='none');
+const show=(id,d='block')=>g(id)&&(g(id).style.display=d);
 
 let curScreen='sShop';
 function goTo(id){
@@ -482,26 +515,26 @@ function goTo(id){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g(id)?.classList.add('active');
   g('nb-'+id)?.classList.add('active');
-  curScreen=id; window.scrollTo(0,0);
+  curScreen=id;window.scrollTo(0,0);
   tg.HapticFeedback.impactOccurred?.('light');
-  if(id==='sProfile') loadProfile();
-  if(id==='sHistory') loadHistory();
-  if(id==='sCart')    renderCart();
+  if(id==='sProfile')loadProfile();
+  if(id==='sHistory')loadHistory();
+  if(id==='sCart')renderCart();
 }
 
 async function apiFetch(path,opts={},ms=9000){
   const ctrl=new AbortController();
   const tid=setTimeout(()=>ctrl.abort(),ms);
-  try{const r=await fetch(API+path,{...opts,signal:ctrl.signal});clearTimeout(tid);return r}
-  catch(e){clearTimeout(tid);throw e}
+  try{const r=await fetch(API+path,{...opts,signal:ctrl.signal});clearTimeout(tid);return r;}
+  catch(e){clearTimeout(tid);throw e;}
 }
 
 function setApiOk(ok,msg=''){
   apiOk=ok;
   const bar=g('apiBar1'),txt=g('apiTxt1'),dot=g('dot1');
-  if(bar) bar.className='api-bar '+(ok?'ok':msg?'fail':'load');
-  if(txt) txt.textContent=ok?'✅ Сервер доступен':`❌ ${msg||'Нет соединения'}`;
-  if(dot) dot.className='dot '+(ok?'g':msg?'r':'gr');
+  if(bar)bar.className='api-bar '+(ok?'ok':msg?'fail':'load');
+  if(txt)txt.textContent=ok?'✅ Сервер доступен':`❌ ${msg||'Нет соединения'}`;
+  if(dot)dot.className='dot '+(ok?'g':msg?'r':'gr');
 }
 
 let _tt=null;
@@ -513,7 +546,9 @@ function overlay(on,txt='Создаём заказ...'){
   g('ovTxt').textContent=txt;g('overlay').classList.toggle('on',on);
 }
 
-// ══ ТИКЕР ══
+// ════════════════════════
+//  ТИКЕР
+// ════════════════════════
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 async function loadRecentPurchases(){
   try{
@@ -522,59 +557,78 @@ async function loadRecentPurchases(){
     const list=await r.json();
     if(!Array.isArray(list)||!list.length)return;
     const inner=g('tickerInner');if(!inner)return;
-    const html=list.map(p=>`<span class="ticker-item"><span>🛍</span><span class="ti-name">${p.username?'@'+esc(p.username):esc(p.name||'Аноним')}</span><span class="ti-sep">·</span><span class="ti-plan">${esc(p.label)}</span><span class="ti-sep">·</span><span class="ti-price">${Math.round(p.rub)} ₽</span></span>`).join('');
+    const html=list.map(p=>{
+      const icon=p.category==='lebro'?'👑':'🛍';
+      const nameColor=p.category==='lebro'?'var(--lebro)':'var(--acc)';
+      return `<span class="ticker-item"><span>${icon}</span><span class="ti-name" style="color:${nameColor}">${p.username?'@'+esc(p.username):esc(p.name||'Аноним')}</span><span class="ti-sep">·</span><span class="ti-plan">${esc(p.label)}</span><span class="ti-sep">·</span><span class="ti-price">${Math.round(p.rub)} ₽</span></span>`;
+    }).join('');
     inner.innerHTML=html+html;
     inner.style.animationDuration=Math.max(18,list.length*3.8)+'s';
     g('tickerWrap').classList.add('visible');
-    g('tickerWrap').addEventListener('mouseenter',()=>{inner.style.animationPlayState='paused';});
-    g('tickerWrap').addEventListener('mouseleave',()=>{inner.style.animationPlayState='running';});
   }catch{}
 }
 
-// ══ МАГАЗИН ══
+// ════════════════════════
+//  МАГАЗИН
+// ════════════════════════
 async function loadShop(){
   hide('shopContent');show('shopSpin');setApiOk(false);
+  const cat=currentCategory;
   try{
-    const r=await apiFetch('/miniapp/plans');
-    if(r.ok){const d=await r.json();if(Array.isArray(d)&&d.length){plans=d;setApiOk(true);}else setApiOk(false,'пустой ответ');}
-    else setApiOk(false,`HTTP ${r.status}`);
+    const r=await apiFetch(`/miniapp/plans?category=${cat}`);
+    if(r.ok){
+      const d=await r.json();
+      if(Array.isArray(d)&&d.length){
+        if(cat==='lebro')plansLebro=d;else plansKlukva=d;
+        setApiOk(true);
+      }else setApiOk(false,'пустой ответ');
+    }else setApiOk(false,`HTTP ${r.status}`);
   }catch(e){setApiOk(false,e.name==='AbortError'?'таймаут':(e.message||'нет соединения'));}
   hide('shopSpin');show('shopContent');
   if(!apiOk){
     g('shopErrMsg').textContent=`Не удалось загрузить тарифы.\n${API}`;
     g('shopErr').classList.add('on');hide('planListWrap');
   }else{
-    g('shopErr').classList.remove('on');show('planListWrap');renderPlans();
-    if(PARAM_DAYS&&plans.find(p=>p.days===PARAM_DAYS&&p.stock>0)) addToCart(PARAM_DAYS,1);
+    g('shopErr').classList.remove('on');show('planListWrap');
+    renderPlans();
+    if(PARAM_DAYS&&cat===PARAM_CAT){
+      const plans=cat==='lebro'?plansLebro:plansKlukva;
+      if(plans.find(p=>p.days===PARAM_DAYS&&p.stock>0))addToCart(PARAM_DAYS,cat,1);
+    }
     loadRecentPurchases();
   }
   updateCartBadge();
 }
 
-// ══ ДЕФОЛТНЫЕ ЦЕНЫ (для расчёта скидки) ══
-const DEFAULT_PRICES = {1:150, 7:300, 30:450, 9999:750};
+const DEFAULT_PRICES={klukvadlc:{1:150,7:300,30:450,9999:750},lebro:{1:200,7:400,30:600,9999:900}};
 
 function renderPlans(){
+  const cat=currentCategory;
+  const isLebro=cat==='lebro';
+  const plans=isLebro?plansLebro:plansKlukva;
+  const cart=getCart(cat);
   const list=g('planList');list.innerHTML='';
   plans.forEach(p=>{
     if(!p.rub)return;
     const forever=p.days===9999,out=p.stock<=0;
-    const ico=forever?'♾️':p.days===1?'🔑':p.days===7?'🗝️':'🏆';
+    const ico=forever?'♾️':isLebro?'👑':p.days===1?'🔑':p.days===7?'🗝️':'🏆';
     const sCls=out?'out':p.stock<=5?'low':'ok';
     const sTxt=out?'✕ Закончились':p.stock<=5?`⚠ Осталось ${p.stock} шт.`:`✓ ${p.stock} шт.`;
     const inCart=!!(cart[p.days]&&cart[p.days]>0),qty=cart[p.days]||0;
-    const defPrice=DEFAULT_PRICES[p.days];
-    const disc=defPrice&&p.rub<defPrice?Math.round((1-p.rub/defPrice)*100):0;
+    const defP=(DEFAULT_PRICES[cat]||DEFAULT_PRICES.klukvadlc)[p.days];
+    const disc=defP&&p.rub<defP?Math.round((1-p.rub/defP)*100):0;
+    const priceColor=isLebro?'style="color:var(--lebro)"':'';
     const priceHtml=disc>0
-      ?`<div class="p-price-old">${defPrice} ₽</div><div class="p-price" style="color:var(--green)">${p.rub} ₽</div><div class="disc-badge">−${disc}%</div>`
-      :`<div class="p-price">${p.rub} ₽</div>`;
+      ?`<div class="p-price-old">${defP} ₽</div><div class="p-price ${isLebro?'lebro-price':''}">${p.rub} ₽</div><div class="disc-badge">−${disc}%</div>`
+      :`<div class="p-price ${isLebro?'lebro-price':''}">${p.rub} ₽</div>`;
     const wrap=document.createElement('div');wrap.style.position='relative';
     const el=document.createElement('div');
-    el.className=`plan${forever?' forever':''}${out?' out':''}${inCart?' in-cart':''}`;
-    el.id=`plan-${p.days}`;
+    el.className=`plan${forever?' forever':''}${out?' out':''}${inCart?' in-cart':''}${isLebro?' lebro-plan':''}`;
+    el.id=`plan-${cat}-${p.days}`;
     el.innerHTML=`
-      ${p.days===30?'<div class="hot-badge">🔥 Хит</div>':''}
-      <div class="p-ico">${ico}</div>
+      ${p.days===30&&!isLebro?'<div class="hot-badge">🔥 Хит</div>':''}
+      ${p.days===9999&&isLebro?'<div class="hot-badge" style="background:var(--lebro)">👑 VIP</div>':''}
+      <div class="p-ico ${isLebro?'lebro-ico':''}">${ico}</div>
       <div class="p-meta">
         <div class="p-name">${p.label}</div>
         <div class="p-stock ${sCls}">${sTxt}</div>
@@ -582,83 +636,134 @@ function renderPlans(){
       </div>
       <div class="p-right">
         ${priceHtml}
-        <div class="qty" id="qty-${p.days}">
-          <button class="qty-btn" onclick="changeQty(${p.days},-1,event)" ${qty<=0?'disabled':''}>−</button>
-          <div class="qty-val" id="qv-${p.days}">${qty}</div>
-          <button class="qty-btn" onclick="changeQty(${p.days},1,event)" ${out?'disabled':''}>+</button>
+        <div class="qty" id="qty-${cat}-${p.days}">
+          <button class="qty-btn" onclick="changeQty(${p.days},'${cat}',-1,event)" ${qty<=0?'disabled':''}>−</button>
+          <div class="qty-val" id="qv-${cat}-${p.days}">${qty}</div>
+          <button class="qty-btn" onclick="changeQty(${p.days},'${cat}',1,event)" ${out?'disabled':''}>+</button>
         </div>
       </div>`;
     wrap.appendChild(el);list.appendChild(wrap);
   });
 }
 
-function changeQty(days,delta,e){
+function changeQty(days,cat,delta,e){
   e?.stopPropagation();
+  const plans=cat==='lebro'?plansLebro:plansKlukva;
   const p=plans.find(x=>x.days===days);if(!p)return;
+  const cart=getCart(cat);
   const cur=cart[days]||0,next=Math.max(0,Math.min(cur+delta,p.stock,10));
   if(next===0)delete cart[days];else cart[days]=next;
-  saveCart();tg.HapticFeedback.selectionChanged?.();updateCartBadge();
-  const qv=g('qv-'+days),pl=g('plan-'+days);
+  saveCart(cat);tg.HapticFeedback.selectionChanged?.();updateCartBadge();
+  const qv=g(`qv-${cat}-${days}`),pl=g(`plan-${cat}-${days}`);
   if(qv)qv.textContent=next;
   if(pl){pl.classList.toggle('in-cart',next>0);const btns=pl.querySelectorAll('.qty-btn');if(btns[0])btns[0].disabled=next<=0;}
 }
 
-function addToCart(days,qty){
+function addToCart(days,cat,qty){
+  const plans=cat==='lebro'?plansLebro:plansKlukva;
   const p=plans.find(x=>x.days===days);if(!p||p.stock<=0)return;
+  const cart=getCart(cat);
   cart[days]=(cart[days]||0)+qty;if(cart[days]>p.stock)cart[days]=p.stock;
-  saveCart();updateCartBadge();
+  saveCart(cat);updateCartBadge();
 }
 
 function updateCartBadge(){
-  const total=Object.values(cart).reduce((s,v)=>s+v,0);
+  const totalK=Object.values(cartKlukva).reduce((s,v)=>s+v,0);
+  const totalL=Object.values(cartLebro).reduce((s,v)=>s+v,0);
+  const total=totalK+totalL;
   const badge=g('cartBadge');badge.textContent=total;badge.classList.toggle('on',total>0);
 }
 
-// ══ КОРЗИНА ══
+// ════════════════════════
+//  КОРЗИНА
+// ════════════════════════
 function renderCart(){
-  const entries=Object.entries(cart).filter(([,v])=>v>0);
-  if(!entries.length){show('cartEmpty');hide('cartContent');return;}
+  const entriesK=Object.entries(cartKlukva).filter(([,v])=>v>0);
+  const entriesL=Object.entries(cartLebro).filter(([,v])=>v>0);
+  if(!entriesK.length&&!entriesL.length){show('cartEmpty');hide('cartContent');return;}
   hide('cartEmpty');show('cartContent');
-  const list=g('cartList');list.innerHTML='';
-  let totalRub=0,totalKeys=0;
-  entries.forEach(([days,qty])=>{
-    const p=plans.find(x=>x.days===+days);if(!p)return;
-    const sum=p.rub*qty;totalRub+=sum;totalKeys+=qty;
-    const el=document.createElement('div');el.className='cart-item';
-    el.innerHTML=`
-      <div class="p-ico">${+days===9999?'♾️':+days===1?'🔑':+days===7?'🗝️':'🏆'}</div>
-      <div class="ci-info"><div class="ci-name">${p.label}</div><div class="ci-sub">${p.rub} ₽ × ${qty} шт.</div></div>
-      <div class="ci-price">${sum} ₽</div>
-      <button class="ci-del" onclick="removeFromCart(${days})">✕</button>`;
-    list.appendChild(el);
-  });
-  g('cartCount').textContent=entries.length;g('cartKeys').textContent=totalKeys;g('cartTotal').textContent=totalRub+' ₽';
+  let totalRub=0;
+
+  // KlukvaDLC section
+  if(entriesK.length){
+    show('cartKlukvaSection');
+    const list=g('cartKlukvaList');list.innerHTML='';
+    entriesK.forEach(([days,qty])=>{
+      const p=plansKlukva.find(x=>x.days===+days);if(!p)return;
+      const sum=p.rub*qty;totalRub+=sum;
+      const el=document.createElement('div');el.className='cart-item';
+      el.innerHTML=`
+        <div class="p-ico">${+days===9999?'♾️':+days===1?'🔑':+days===7?'🗝️':'🏆'}</div>
+        <div class="ci-info"><div class="ci-name">${p.label}</div><div class="ci-sub">${p.rub} ₽ × ${qty} шт.</div></div>
+        <div class="ci-price">${sum} ₽</div>
+        <button class="ci-del" onclick="removeFromCart(${days},'klukvadlc')">✕</button>`;
+      list.appendChild(el);
+    });
+  }else hide('cartKlukvaSection');
+
+  // LebRo VIP section
+  if(entriesL.length){
+    show('cartLebroSection');
+    const list=g('cartLebroList');list.innerHTML='';
+    entriesL.forEach(([days,qty])=>{
+      const p=plansLebro.find(x=>x.days===+days);if(!p)return;
+      const sum=p.rub*qty;totalRub+=sum;
+      const el=document.createElement('div');el.className='cart-item';
+      el.innerHTML=`
+        <div class="p-ico lebro-ico">${+days===9999?'♾️':'👑'}</div>
+        <div class="ci-info"><div class="ci-name">${p.label}</div><div class="ci-sub" style="color:var(--lebro)">${p.rub} ₽ × ${qty} шт.</div></div>
+        <div class="ci-price lebro-ci-price">${sum} ₽</div>
+        <button class="ci-del" onclick="removeFromCart(${days},'lebro')">✕</button>`;
+      list.appendChild(el);
+    });
+  }else hide('cartLebroSection');
+
+  const totalK=entriesK.reduce((s,[,v])=>s+v,0);
+  const totalL=entriesL.reduce((s,[,v])=>s+v,0);
+  g('cartCount').textContent=(totalK+totalL);
+  g('cartTotal').textContent=totalRub+' ₽';
+
+  // Show pay buttons
+  if(entriesK.length)show('checkoutKlukva');else hide('checkoutKlukva');
+  if(entriesL.length)show('checkoutLebro');else hide('checkoutLebro');
 }
 
-function removeFromCart(days){
-  delete cart[days];saveCart();updateCartBadge();renderCart();renderPlans();
+function removeFromCart(days,cat){
+  const cart=getCart(cat);
+  delete cart[days];saveCart(cat);updateCartBadge();renderCart();
+  // Re-render plan list if same category
+  if(cat===currentCategory)renderPlans();
   tg.HapticFeedback.impactOccurred?.('light');
 }
-function clearCart(){cart={};saveCart();updateCartBadge();}
+function clearCart(cat){
+  if(cat==='lebro'){cartLebro={};}else{cartKlukva={};}
+  saveCart(cat);updateCartBadge();
+}
 
-// ══ ОПЛАТА ЧЕРЕЗ FREEKASSA ══
-async function checkout(){
+// ════════════════════════
+//  ОПЛАТА
+// ════════════════════════
+async function checkout(cat){
+  const cart=getCart(cat);
   const entries=Object.entries(cart).filter(([,v])=>v>0);
   if(!entries.length){toast('Корзина пуста');return;}
   if(!apiOk){toast('❌ Сервер недоступен');return;}
   if(!UID){toast('⚠ Открой магазин через Telegram бота');return;}
 
   tg.HapticFeedback.impactOccurred?.('medium');
-  overlay(true,'Создаём заказ...');g('payBtn').disabled=true;
+  const isLebro=cat==='lebro';
+  overlay(true,`Создаём заказ ${isLebro?'LebRo VIP':'KlukvaDLC'}...`);
+  const payBtn=isLebro?g('payBtnLebro'):g('payBtnKlukva');
+  if(payBtn)payBtn.disabled=true;
 
   let payUrl='',errors=[];
 
-  for(const [days,qty] of entries){
+  for(const[days,qty]of entries){
     try{
       const r=await apiFetch('/miniapp/create_order',{
         method:'POST',
         headers:{'Content-Type':'application/json','X-Telegram-Init-Data':IDATA},
-        body:JSON.stringify({days:+days,uid:UID,qty})
+        body:JSON.stringify({days:+days,uid:UID,qty,category:cat})
       },15000);
       const d=await r.json();
       if(r.ok&&d.pay_url)payUrl=d.pay_url;
@@ -666,13 +771,17 @@ async function checkout(){
     }catch(e){errors.push(e.name==='AbortError'?'таймаут':e.message);}
   }
 
-  overlay(false);g('payBtn').disabled=false;
+  overlay(false);
+  if(payBtn)payBtn.disabled=false;
 
   if(!payUrl){toast('❌ '+(errors[0]||'Не удалось создать заказ'),5000);return;}
 
   lastPayUrl=payUrl;
   g('payLink').href=payUrl;
   g('payLink').textContent=payUrl.length>50?payUrl.slice(0,50)+'...':payUrl;
+  g('payIco').textContent=isLebro?'👑':'🎉';
+  g('payTtl').textContent=isLebro?'Заказ LebRo создан!':'Заказ создан!';
+  g('copyPayBtn').className='btn'+(isLebro?' lebro-btn':'');
   g('copyPayBtn').onclick=async()=>{
     try{await navigator.clipboard.writeText(payUrl);}
     catch{const ta=document.createElement('textarea');ta.value=payUrl;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
@@ -681,17 +790,19 @@ async function checkout(){
     toast('✅ Ссылка скопирована!');
   };
 
-  clearCart();renderPlans();
+  clearCart(cat);renderPlans();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   g('sPay').classList.add('active');
   window.scrollTo(0,0);tg.HapticFeedback.impactOccurred?.('heavy');
 }
 
-// ══ ПРОФИЛЬ ══
+// ════════════════════════
+//  ПРОФИЛЬ
+// ════════════════════════
 let profileLoaded=false;
 async function loadProfile(){
-  if(!UID){g('profileSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div><div class="e-sub">ID не определён</div></div>';return;}
+  if(!UID){g('profileSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div></div>';return;}
   if(profileLoaded)return;
   show('profileSpin');hide('profileContent');
   try{
@@ -704,9 +815,13 @@ async function loadProfile(){
       if(d.active_keys&&d.active_keys.length){
         show('activeKeysWrap');const list=g('activeKeysList');list.innerHTML='';
         d.active_keys.forEach(k=>{
-          const el=document.createElement('div');el.className='key-card';
+          const el=document.createElement('div');
+          const isLebro=k.category==='lebro';
+          el.className='key-card'+(isLebro?' lebro-key':'');
           const exp=k.expires&&k.expires.includes('9999')?'♾️ Навсегда':formatLeft(k.expires);
-          el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:800">${k.label}</div><div style="font-size:11px;color:var(--green);font-weight:700">${exp}</div></div><div class="key-val"><span style="word-break:break-all">${k.val}</span><button class="copy-btn" onclick="copyKey('${k.val}',this)">📋</button></div>`;
+          const catIcon=isLebro?'👑':'🍓';
+          const catColor=isLebro?'var(--lebro)':'var(--acc)';
+          el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13px;font-weight:800">${catIcon} ${k.label}</div><div style="font-size:11px;color:var(--green);font-weight:700">${exp}</div></div><div class="key-val"><span style="word-break:break-all">${k.val}</span><button class="copy-btn" onclick="copyKey('${k.val}',this)">📋</button></div>`;
           list.appendChild(el);
         });
       }else hide('activeKeysWrap');
@@ -723,7 +838,9 @@ function copyKey(val,btn){
   btn.textContent='✅';setTimeout(()=>{btn.textContent='📋';},2000);toast('✅ Ключ скопирован!');
 }
 
-// ══ ИСТОРИЯ ══
+// ════════════════════════
+//  ИСТОРИЯ
+// ════════════════════════
 let histLoaded=false;
 async function loadHistory(){
   if(!UID){g('histSpin').innerHTML='<div class="empty"><div class="e-ico">⚠️</div><div class="e-ttl">Открой через Telegram</div></div>';return;}
@@ -735,10 +852,13 @@ async function loadHistory(){
       if(!orders.length){show('histEmpty');hide('histList');histLoaded=true;return;}
       hide('histEmpty');const list=g('histList');list.innerHTML='';
       orders.forEach(o=>{
-        const el=document.createElement('div');el.className='hist-item';
+        const el=document.createElement('div');
+        const isLebro=o.category==='lebro';
+        el.className='hist-item'+(isLebro?' lebro-hist':'');
         const sMap={paid:'✅ Оплачен',pending:'⏳ Ожидает',cancelled:'❌ Отменён'};
         const sCls={paid:'paid',pending:'pending',cancelled:'cancelled'};
-        el.innerHTML=`<div class="hist-top"><div><div class="hist-plan">${o.label||o.days+' дней'}</div><div class="hist-meta">№${o.id} · ${o.rub} ₽ · ${fmtDate(o.created)}</div></div><div class="hist-status ${sCls[o.status]||'pending'}">${sMap[o.status]||o.status}</div></div>${o.keys&&o.keys.length?o.keys.map(k=>`<div class="hist-key" onclick="copyFromHist('${k}',this)" style="cursor:pointer">🔑 ${k} <span style="color:var(--muted);font-size:10px">нажми чтобы скопировать</span></div>`).join(''):''}`;
+        const catIcon=isLebro?'👑':'🍓';
+        el.innerHTML=`<div class="hist-top"><div><div class="hist-plan">${catIcon} ${o.label||o.days+' дней'}</div><div class="hist-meta">№${o.id} · ${o.rub} ₽ · ${fmtDate(o.created)}</div></div><div class="hist-status ${sCls[o.status]||'pending'}">${sMap[o.status]||o.status}</div></div>${o.keys&&o.keys.length?o.keys.map(k=>`<div class="hist-key" onclick="copyFromHist('${k}',this)" style="cursor:pointer">🔑 ${k} <span style="color:var(--muted);font-size:10px">нажми скопировать</span></div>`).join(''):''}`;
         list.appendChild(el);
       });
       histLoaded=true;
@@ -757,12 +877,27 @@ function copyFromHist(val,el){
 function fmtDate(s){if(!s)return'—';try{const d=new Date(s.replace(' ','T')+'Z');return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});}catch{return s.slice(0,10);}}
 function formatLeft(s){if(!s)return'—';try{if(s.includes('9999'))return'♾️';const diff=new Date(s)-new Date();if(diff<=0)return'❌ Истёк';const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);return d>0?`${d}д ${h}ч`:`${h}ч`;}catch{return'—';}}
 
+// Авто-обновление каждые 30 сек
 setInterval(async()=>{
   if(!apiOk||curScreen!=='sShop')return;
-  try{const r=await apiFetch('/miniapp/plans');if(r.ok){const f=await r.json();if(Array.isArray(f)&&f.length){plans=f;renderPlans();}}}catch{}
+  try{
+    const r=await apiFetch(`/miniapp/plans?category=${currentCategory}`);
+    if(r.ok){
+      const f=await r.json();
+      if(Array.isArray(f)&&f.length){
+        if(currentCategory==='lebro')plansLebro=f;else plansKlukva=f;
+        renderPlans();
+      }
+    }
+  }catch{}
 },30000);
 
-loadShop();
+// Инициализация
+if(PARAM_CAT==='lebro'){
+  switchCategory('lebro');
+}else{
+  loadShop();
+}
 </script>
 </body>
 </html>
